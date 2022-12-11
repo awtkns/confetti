@@ -3,32 +3,50 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
-import {useState} from "react";
+import { useState } from "react";
 import supabase from "../server/supabase";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { RealtimeChannel } from "@supabase/realtime-js";
 
 const FIB = [1, 2, 3, 5, 8, 13];
-const FIB_EVENT = 'fib';
+const FIB_EVENT = "fib";
 
 const Home: NextPage = () => {
   const [fib, setFib] = useState(8);
+  const [users, setUsers] = useState({} as object);
+  const { data: sessionData } = useSession();
 
   const channel = supabase
-      .channel("room1")
-      .subscribe()
-      .on('broadcast', { event: FIB_EVENT }, ({payload}) => {
-          console.log(payload)
-          setFib(payload.value)
-        })
+    .channel("index", {
+      config: {
+        broadcast: { self: false, ack: true },
+        presence: { key: sessionData?.user?.name || "Bob" },
+      },
+    })
+    .on("broadcast", { event: FIB_EVENT }, ({ payload }) => {
+      console.log(payload);
+      setFib(payload.value);
+    });
+
+  channel.on("presence", { event: "sync" }, () => {
+    setUsers(channel.presenceState());
+  });
+
+  channel.subscribe(async (status) => {
+    if (status === "SUBSCRIBED") {
+      await channel.track({ online_at: new Date().toISOString() });
+    }
+  });
 
   function handleClick() {
-        const s = new Set(FIB)
+    const s = new Set(FIB);
 
-        s.delete(fib)
-        const x = Array.from(s)[Math.floor(Math.random() * s.size)] || 0
+    s.delete(fib);
+    const x = Array.from(s)[Math.floor(Math.random() * s.size)] || 0;
 
-        channel
-            .send({type: 'broadcast', event: FIB_EVENT, payload: {value: x}})
-            .then(() => setFib(x))
+    channel
+      .send({ type: "broadcast", event: FIB_EVENT, payload: { value: x } })
+      .then(() => setFib(x));
   }
 
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
@@ -41,11 +59,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div>Users: {Object.keys(users).map((s) => s + " ------------- ")}</div>
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-10xl font-extrabold tracking-tight text-white sm:text-[8rem] text-[5rem]">
-            Estim<span className="text-[hsl(280,100%,70%)]">
-            <button onClick={handleClick}>{fib}</button>
-          </span>r
+          <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
+            Estim
+            <span className="text-[hsl(280,100%,70%)]">
+              <button onClick={handleClick}>{fib}</button>
+            </span>
+            r
           </h1>
           <div className="flex flex-col items-center gap-2">
             <p className="text-2xl text-white">
@@ -66,7 +87,7 @@ const AuthShowcase: React.FC = () => {
 
   const { data: secretMessage } = trpc.auth.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (
