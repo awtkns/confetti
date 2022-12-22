@@ -5,38 +5,23 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
 import supabase from "../server/supabase";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { RealtimeChannel } from "@supabase/realtime-js";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 const FIB_EVENT = "fib";
 
 const Home: NextPage = () => {
   const [fib, setFib] = useState(8);
-  const [users, setUsers] = useState({} as object);
-  const { data: sessionData } = useSession();
 
   const channel = supabase
     .channel("index", {
       config: {
         broadcast: { self: false, ack: true },
-        presence: { key: sessionData?.user?.name || "Bob" },
       },
     })
     .on("broadcast", { event: FIB_EVENT }, ({ payload }) => {
-      console.log(payload);
       setFib(payload.value);
-    });
-
-  channel.on("presence", { event: "sync" }, () => {
-    setUsers(channel.presenceState());
-  });
-
-  channel.subscribe(async (status) => {
-    if (status === "SUBSCRIBED") {
-      await channel.track({ online_at: new Date().toISOString() });
-    }
-  });
+    })
+    .subscribe();
 
   function handleClick() {
     const s = new Set(FIB);
@@ -52,34 +37,25 @@ const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
 
   return (
-    <>
-      <Head>
-        <title>Estimator</title>
-        <meta name="description" content="Estimation, but fun" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div>Users: {Object.keys(users).map((s) => s + " ------------- ")}</div>
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
-            Estim
-            <span className="text-[hsl(280,100%,70%)]">
-              <button onClick={handleClick}>{fib}</button>
-            </span>
-            r
-          </h1>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div>
-        </div>
-      </main>
-    </>
+    <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+      <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
+        Estim
+        <span className="text-[hsl(280,100%,70%)]">
+          <button onClick={handleClick}>{fib}</button>
+        </span>
+        r
+      </h1>
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-2xl text-white">
+          {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+        </p>
+        <AuthShowcase />
+      </div>
+    </div>
   );
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default Home;
 
 const AuthShowcase: React.FC = () => {
