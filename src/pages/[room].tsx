@@ -4,6 +4,7 @@ import supabase from "../server/supabase";
 import { useSession } from "next-auth/react";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 const ESTIMATE_EVENT = "input";
@@ -72,12 +73,18 @@ const Room: NextPage = () => {
 
   return (
     <>
+      <Link href={"/"} className="absolute right-2 top-2">
+        <button className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20">
+          Home
+        </button>
+      </Link>
       <span className="absolute left-2 top-2">
         {users.map((user, i) => (
           <img
             key={i}
             src={user.image}
             className="m-1 h-8 rounded-full drop-shadow-2xl"
+            referrerPolicy="no-referrer"
           ></img>
         ))}
       </span>
