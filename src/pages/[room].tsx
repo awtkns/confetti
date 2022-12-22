@@ -1,10 +1,11 @@
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import supabase from "../server/supabase";
 import { useSession } from "next-auth/react";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 const ESTIMATE_EVENT = "input";
@@ -19,6 +20,7 @@ const Room: NextPage = () => {
   const { query, isReady } = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [channel, setChannel] = useState<RealtimeChannel>();
+  const [e, setE] = useState<Map<string, number>>(new Map());
 
   const room = query.room;
 
@@ -27,25 +29,32 @@ const Room: NextPage = () => {
     if (status !== "authenticated") return;
     if (channel) return;
 
-    let room = typeof query.room === "string" ? query.room : "";
+    const room = typeof query.room === "string" ? query.room : "";
 
-    let c = supabase
+    const c = supabase
       .channel(room, {
         config: {
-          broadcast: { self: false, ack: true },
+          broadcast: { self: true, ack: true },
           presence: { key: room },
         },
       })
       .on("broadcast", { event: "input" }, ({ payload }) => {
+        console.log("HERE");
+        console.log(payload);
+        setE(
+          (prevState) => new Map(prevState.set(payload.user, payload.value))
+        );
         console.log(payload);
       });
 
     c.on("presence", { event: "sync" }, () => {
-      let state = c.presenceState();
+      const state = c.presenceState();
       console.log("presence sync", state);
 
-      // @ts-ignore
-      if (state[room] != undefined) setUsers(state[room]);
+      if (state[room] !== undefined) {
+        // @ts-ignore
+        setUsers(state[room]);
+      }
     });
 
     c.subscribe(async (status) => {
@@ -58,7 +67,14 @@ const Room: NextPage = () => {
     });
 
     setChannel(c);
-  }, [isReady, status]);
+  }, [
+    channel,
+    isReady,
+    query.room,
+    sessionData?.user?.image,
+    sessionData?.user?.name,
+    status,
+  ]);
 
   function estimateClicked(estimate: number) {
     if (channel == undefined) return;
@@ -78,14 +94,16 @@ const Room: NextPage = () => {
           Home
         </button>
       </Link>
+      {JSON.stringify(Object.fromEntries(e))}
       <span className="absolute left-2 top-2">
         {users.map((user, i) => (
-          <img
+          <Image
+            alt="User profile image"
             key={i}
             src={user.image}
             className="m-1 h-8 rounded-full drop-shadow-2xl"
             referrerPolicy="no-referrer"
-          ></img>
+          ></Image>
         ))}
       </span>
       <h1 className="text-[5rem] font-extrabold tracking-tight text-white">
