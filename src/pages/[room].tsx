@@ -5,22 +5,21 @@ import { useSession } from "next-auth/react";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import ResultsTable from "../components/ResultsTable";
+import type { User, UserEstimate } from "../types/game";
+import { GameState } from "../types/game";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 const ESTIMATE_EVENT = "input";
-
-interface User {
-  user: string;
-  image: string;
-}
+const CLEAR_EVENT = "clear";
 
 const Room: NextPage = () => {
   const { data: sessionData, status } = useSession();
   const { query, isReady } = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [channel, setChannel] = useState<RealtimeChannel>();
-  const [e, setE] = useState<Map<string, number>>(new Map());
+  const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
+  const [estimates, setEstimates] = useState<UserEstimate[]>([]);
 
   const room = query.room;
 
@@ -34,17 +33,24 @@ const Room: NextPage = () => {
     const c = supabase
       .channel(room, {
         config: {
-          broadcast: { self: true, ack: true },
+          broadcast: { self: false, ack: true },
           presence: { key: room },
         },
       })
-      .on("broadcast", { event: "input" }, ({ payload }) => {
-        console.log("HERE");
-        console.log(payload);
-        setE(
-          (prevState) => new Map(prevState.set(payload.user, payload.value))
-        );
-        console.log(payload);
+      .on("broadcast", { event: ESTIMATE_EVENT }, ({ payload }) => {
+        console.log("RECIEVD", payload);
+        setEstimates((prevState) => [
+          ...prevState,
+          {
+            user: payload.user,
+            value: payload.value,
+          },
+        ]);
+      })
+      .on("broadcast", { event: CLEAR_EVENT }, function () {
+        console.log("CLEAR");
+        setEstimates([]);
+        setGameState(GameState.CHOOSING);
       });
 
     c.on("presence", { event: "sync" }, () => {
@@ -76,15 +82,49 @@ const Room: NextPage = () => {
     status,
   ]);
 
+  useEffect(() => {
+    if (estimates.length >= users.length) setGameState(GameState.VIEWING);
+  }, [estimates, users]);
+
   function estimateClicked(estimate: number) {
-    if (channel == undefined) return;
+    console.log("ESTIMATE CLICKED", estimate);
+
+    const user: User = {
+      user: sessionData?.user?.name || "Anonymous",
+      image: sessionData?.user?.image || "none",
+    };
+
     channel
-      .send({
+      ?.send({
         type: "broadcast",
         event: ESTIMATE_EVENT,
-        payload: { value: estimate, user: sessionData?.user?.name },
+        payload: { value: estimate, user: user },
       })
-      .then();
+      .then(() => {
+        console.log("HEREE", estimate);
+        setEstimates((prevState) => [
+          ...prevState,
+          {
+            user: user,
+            value: estimate,
+          },
+        ]);
+      });
+
+    setGameState(GameState.SUBMITTED);
+  }
+
+  function emitClear() {
+    setGameState(GameState.CHOOSING);
+    channel
+      ?.send({
+        type: "broadcast",
+        event: CLEAR_EVENT,
+      })
+      .then(() => {
+        setEstimates([]);
+        setGameState(GameState.CHOOSING);
+      });
   }
 
   return (
@@ -94,44 +134,56 @@ const Room: NextPage = () => {
           Home
         </button>
       </Link>
-      {JSON.stringify(Object.fromEntries(e))}
       <span className="absolute left-2 top-2">
         {users.map((user, i) => (
-          <Image
+          <img
             alt="User profile image"
             key={i}
             src={user.image}
-            className="m-1 h-8 rounded-full drop-shadow-2xl"
+            className={
+              sessionData?.user?.name === user.user
+                ? " m-1 h-8 rounded-full border-2 border-amber-500 drop-shadow-2xl"
+                : " m-1 h-8 rounded-full drop-shadow-2xl"
+            }
             referrerPolicy="no-referrer"
-          ></Image>
+          />
         ))}
       </span>
       <h1 className="text-[5rem] font-extrabold tracking-tight text-white">
         Estimating
       </h1>
       <p className="text-center text-2xl text-white">Room: {room}</p>
-      <div className="m-16 grid grid-cols-3 gap-4">
-        {FIB.map((x, i) => (
-          <EstimationButton estimate={x} onClick={estimateClicked} key={i} />
+
+      {(gameState == GameState.CHOOSING && (
+        <div className="m-16 grid grid-cols-3 gap-4">
+          {FIB.map((x, i) => (
+            <button
+              className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+              onClick={() => estimateClicked(x)}
+              key={i}
+            >
+              {x}
+            </button>
+          ))}
+        </div>
+      )) ||
+        (gameState == GameState.SUBMITTED && (
+          <p className="text-center text-2xl text-white">
+            Waiting for others...
+          </p>
+        )) ||
+        (gameState == GameState.VIEWING && (
+          <ResultsTable data={estimates}></ResultsTable>
         ))}
-      </div>
+      <button
+        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        onClick={emitClear}
+      >
+        Clear
+      </button>
     </>
   );
 };
 
 // noinspection JSUnusedGlobalSymbols
 export default Room;
-
-const EstimationButton: React.FC<{
-  estimate: number;
-  onClick: (x: number) => void;
-}> = ({ estimate, onClick }) => {
-  return (
-    <button
-      className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-      onClick={() => onClick(estimate)}
-    >
-      {estimate}
-    </button>
-  );
-};
