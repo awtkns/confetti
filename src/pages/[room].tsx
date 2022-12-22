@@ -1,130 +1,30 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import supabase from "../server/supabase";
+
 import { useSession } from "next-auth/react";
-import type { RealtimeChannel } from "@supabase/realtime-js";
-import { useEffect, useState } from "react";
+
 import Link from "next/link";
 import ResultsTable from "../components/ResultsTable";
-import type { User, UserEstimate } from "../types/game";
+import type { User } from "../types/game";
 import { GameState } from "../types/game";
+import { useEstimationChannel } from "../hooks/game";
 
 const FIB = [1, 2, 3, 5, 8, 13];
-const ESTIMATE_EVENT = "input";
-const CLEAR_EVENT = "clear";
 
 const Room: NextPage = () => {
-  const { data: sessionData, status } = useSession();
-  const { query, isReady } = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
-  const [channel, setChannel] = useState<RealtimeChannel>();
-  const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
-  const [estimates, setEstimates] = useState<UserEstimate[]>([]);
-
+  const { data: sessionData } = useSession();
+  const { query } = useRouter();
+  const { onlineUsers, estimates, gameState, submit, emitClear } =
+    useEstimationChannel();
   const room = query.room;
 
-  useEffect(() => {
-    if (!isReady) return;
-    if (status !== "authenticated") return;
-    if (channel) return;
-
-    const room = typeof query.room === "string" ? query.room : "";
-
-    const c = supabase
-      .channel(room, {
-        config: {
-          broadcast: { self: false, ack: true },
-          presence: { key: room },
-        },
-      })
-      .on("broadcast", { event: ESTIMATE_EVENT }, ({ payload }) => {
-        console.log("RECIEVD", payload);
-        setEstimates((prevState) => [
-          ...prevState,
-          {
-            user: payload.user,
-            value: payload.value,
-          },
-        ]);
-      })
-      .on("broadcast", { event: CLEAR_EVENT }, function () {
-        console.log("CLEAR");
-        setEstimates([]);
-        setGameState(GameState.CHOOSING);
-      });
-
-    c.on("presence", { event: "sync" }, () => {
-      const state = c.presenceState();
-      console.log("presence sync", state);
-
-      if (state[room] !== undefined) {
-        // @ts-ignore
-        setUsers(state[room]);
-      }
-    });
-
-    c.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        await c.track({
-          user: sessionData?.user?.name,
-          image: sessionData?.user?.image,
-        });
-      }
-    });
-
-    setChannel(c);
-  }, [
-    channel,
-    isReady,
-    query.room,
-    sessionData?.user?.image,
-    sessionData?.user?.name,
-    status,
-  ]);
-
-  useEffect(() => {
-    if (estimates.length >= users.length) setGameState(GameState.VIEWING);
-  }, [estimates, users]);
-
   function estimateClicked(estimate: number) {
-    console.log("ESTIMATE CLICKED", estimate);
-
     const user: User = {
       user: sessionData?.user?.name || "Anonymous",
       image: sessionData?.user?.image || "none",
     };
 
-    channel
-      ?.send({
-        type: "broadcast",
-        event: ESTIMATE_EVENT,
-        payload: { value: estimate, user: user },
-      })
-      .then(() => {
-        console.log("HEREE", estimate);
-        setEstimates((prevState) => [
-          ...prevState,
-          {
-            user: user,
-            value: estimate,
-          },
-        ]);
-      });
-
-    setGameState(GameState.SUBMITTED);
-  }
-
-  function emitClear() {
-    setGameState(GameState.CHOOSING);
-    channel
-      ?.send({
-        type: "broadcast",
-        event: CLEAR_EVENT,
-      })
-      .then(() => {
-        setEstimates([]);
-        setGameState(GameState.CHOOSING);
-      });
+    submit({ user, value: estimate });
   }
 
   return (
@@ -135,7 +35,7 @@ const Room: NextPage = () => {
         </button>
       </Link>
       <span className="absolute left-2 top-2">
-        {users.map((user, i) => (
+        {onlineUsers.map((user, i) => (
           <img
             alt="User profile image"
             key={i}
