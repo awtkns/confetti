@@ -1,4 +1,8 @@
-import type { NextPage } from "next";
+import type {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  NextPage,
+} from "next";
 import { useRouter } from "next/router";
 
 import { useSession } from "next-auth/react";
@@ -9,6 +13,7 @@ import type { User } from "../types/game";
 import { GameState } from "../types/game";
 import { useEstimationChannel } from "../hooks/game";
 import { useEffect, useState } from "react";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
 
@@ -113,6 +118,25 @@ const Room: NextPage = () => {
         ))}
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const session = await getServerAuthSession(ctx);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
 };
 
 // noinspection JSUnusedGlobalSymbols
