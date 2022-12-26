@@ -11,7 +11,7 @@ const ResultsTable: React.FC<{ data: UserEstimate[] }> = ({ data }) => {
       </thead>
       <tbody>
         {data
-          .sort((a, b) => b.value - a.value)
+          .sort((a, b) => parseInt(a.value) - parseInt(b.value))
           .map((e, i) => (
             <tr key={i}>
               <td className="pl-4 font-thin ">{e.user.user}</td>
