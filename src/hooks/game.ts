@@ -46,7 +46,6 @@ export function useEstimationChannel(): Game {
         _addEstimate(payload, false);
       })
       .on("broadcast", { event: CLEAR_EVENT }, function () {
-        console.log("CLEAR");
         setEstimates([]);
         setGameState(GameState.CHOOSING);
       });

@@ -5,7 +5,7 @@ export interface User {
 
 export interface UserEstimate {
   user: User;
-  value: number;
+  value: string;
 }
 
 export enum GameState {
