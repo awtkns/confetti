@@ -87,23 +87,26 @@ const Room: NextPage = () => {
         </div>
       )) ||
         (gameState == GameState.SUBMITTED && (
-          <p className="text-center text-2xl text-white">
-            Waiting for others...
+          <>
+            <p className="text-center text-2xl text-white">
+              Waiting for others...
+            </p>
             <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
               <thead>
                 <tr>
-                  <td>Waiting for:</td>
+                  <td className="px-4 py-2">Waiting for:</td>
+                  <td></td>
                 </tr>
               </thead>
               <tbody>
                 {waitingForUsers.map((e, i) => (
                   <tr key={i}>
-                    <td className="px-4 font-thin">{e}</td>
+                    <td className="px-4 py-2 font-thin">{e}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </p>
+          </>
         )) ||
         (gameState == GameState.VIEWING && (
           <>
