@@ -62,7 +62,7 @@ const Room: NextPage = () => {
           />
         ))}
       </span>
-      <h1 className="text-[5rem] font-extrabold tracking-tight text-white">
+      <h1 className="py-4 text-4xl font-extrabold tracking-tight text-white sm:text-[5rem]">
         Estimating
       </h1>
       <p className="text-center text-2xl text-white">
@@ -76,7 +76,7 @@ const Room: NextPage = () => {
               className={
                 x === ""
                   ? "invisible"
-                  : "rounded-2xl bg-white/10 px-10 py-8 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+                  : "rounded-2xl bg-white/10 p-4 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-8 lg:p-12 lg:text-4xl"
               }
               onClick={() => estimateClicked(x)}
               key={i}
