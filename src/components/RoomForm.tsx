@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { FaArrowRight } from "react-icons/fa";
 
 const RoomForm: React.FC = () => {
   const router = useRouter();
@@ -27,7 +27,7 @@ const RoomForm: React.FC = () => {
           router.push(roomId);
         }}
       >
-        <ArrowRightIcon className="h-4 text-inherit " />
+        <FaArrowRight className="h-4 text-inherit " />
       </button>
     </div>
   );

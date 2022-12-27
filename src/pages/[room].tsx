@@ -66,7 +66,7 @@ const Room: NextPage = () => {
         Estimating
       </h1>
       <p className="text-center text-2xl text-white">
-        Room: <span className="text-yellow-500">{room}</span>
+        Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
 
       {(gameState == GameState.CHOOSING && (
@@ -128,7 +128,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: `/auth?room=${ctx.query.room}`,
         permanent: false,
       },
     };

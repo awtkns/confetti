@@ -6,29 +6,20 @@ import type {
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+import { useRouter } from "next/router";
 
 const Auth: NextPage = () => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignIn = async () => {
     setLoading(true);
     try {
-      await signIn("google", {
-        callbackUrl: "/dash",
-      });
+      const callbackUrl = `/${
+        typeof router.query.room == "string" ? router.query.room : ""
+      }`;
+      await signIn("google", { callbackUrl });
     } catch (error) {
-      console.log("sdas");
-      // toast(
-      //   "An error occurred while logging in. Please create an issue about the problem.",
-      //   {
-      //     icon: "🤔",
-      //     style: {
-      //       borderRadius: "10px",
-      //       background: "#28283E",
-      //       color: "#fff",
-      //     },
-      //   }
-      // );
     } finally {
       setLoading(false);
     }
@@ -37,9 +28,9 @@ const Auth: NextPage = () => {
   return (
     <div className="container mx-auto">
       <div className="mt-16 flex flex-col items-center justify-center px-4">
-        <h1 className="mb-8 text-4xl">👋 Welcome</h1>
+        <h1 className="mb-8 text-4xl font-bold text-white">👋 Welcome</h1>
         <button
-          className="bg-midnightLight ml-4"
+          className="bg-midnightLight ml-4 rounded-full  outline "
           onClick={handleSignIn}
           // isLoading={loading}
           // loadingText="Loading..."
@@ -60,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (session) {
     return {
       redirect: {
-        destination: "/",
+        destination: `/${ctx.query.room || ""}`,
         permanent: false,
       },
     };
