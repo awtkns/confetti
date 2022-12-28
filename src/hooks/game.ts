@@ -54,7 +54,6 @@ export function useEstimationChannel(): Game {
 
     realtimeChannel.on("presence", { event: "sync" }, () => {
       const state = realtimeChannel.presenceState();
-      console.log("presence sync", state);
 
       if (state[room] !== undefined) {
         // @ts-ignore
@@ -75,7 +74,8 @@ export function useEstimationChannel(): Game {
   }, [isReady, status]);
 
   useEffect(() => {
-    if (estimates.length >= users.length) setGameState(GameState.VIEWING);
+    if (estimates.length && estimates.length >= users.length)
+      setGameState(GameState.VIEWING);
   }, [estimates, users]);
 
   useEffect(() => {
@@ -88,7 +88,6 @@ export function useEstimationChannel(): Game {
       return;
     }
 
-    console.log(estimates);
     setConfetti(
       estimates.every((e) => e.value == (estimates.at(0)?.value || "null"))
     );
