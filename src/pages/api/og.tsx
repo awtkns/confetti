@@ -7,6 +7,9 @@ export const config = {
 };
 
 export default async function (req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const room = searchParams.get("room");
+
   return new ImageResponse(
     (
       <div
@@ -26,7 +29,10 @@ export default async function (req: NextRequest) {
             <h2 tw="flex flex-col text-3xl text-center">
               <span tw="text-[10rem] text-white">🥳 Estimator</span>
               <span tw="text-6xl text-yellow-500 text-center">
-                You have been invited to join a room.
+                {room
+                  ? "CLick to join #" + room + ""
+                  : "You have been invited to join."}
+                .
               </span>
             </h2>
           </div>
