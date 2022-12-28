@@ -14,7 +14,7 @@ export interface ButtonProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Button = forwardRef<HTMLButtonElement>(
+const Button = forwardRef(
   (props: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => (
     <button
       ref={ref}
