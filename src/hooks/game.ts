@@ -96,6 +96,7 @@ export function useEstimationChannel(): Game {
     if (
       gameState == GameState.CHOOSING ||
       gameState == GameState.SUBMITTED ||
+      estimatesCount != users.size ||
       estimatesCount == 0
     ) {
       setConfetti(false);
