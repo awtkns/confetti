@@ -10,7 +10,11 @@ const DefaultLayout = (props: LayoutProps) => {
     <>
       <Head>
         <title>Estimator</title>
-        <meta name="description" content="Estimation, but fun" />
+        <meta name="description" content="Estimation with confetti!" />
+        <meta
+          property="og:image"
+          content="https://estimator.awtkns.com/api/og"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2563eb] to-[#1e293b]">
