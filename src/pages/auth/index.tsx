@@ -18,7 +18,7 @@ const Auth: NextPage = () => {
       const callbackUrl = `/${
         typeof router.query.room == "string" ? router.query.room : ""
       }`;
-      await signIn("google", { callbackUrl });
+      await signIn("github", { callbackUrl });
     } catch (error) {
     } finally {
       setLoading(false);
