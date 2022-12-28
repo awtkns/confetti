@@ -5,27 +5,33 @@ import { GameState } from "../types/game";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { RealtimeChannel } from "@supabase/realtime-js";
+import { nanoid } from "nanoid";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
+const VIEW_EVENT = "view";
+
+const userId = nanoid();
 
 interface Game {
-  onlineUsers: User[];
-  estimates: UserEstimate[];
+  myId: string;
+  onlineUsers: Map<string, User>;
+  estimates: Record<string, UserEstimate>;
   gameState: GameState;
   confetti: boolean;
   submit: (estimate: UserEstimate) => void;
   emitClear: () => void;
+  emitContinue: () => void;
 }
 
 export function useEstimationChannel(): Game {
   const { data: sessionData, status } = useSession();
   const { query, isReady } = useRouter();
   const [confetti, setConfetti] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Map<string, User>>(new Map());
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
-  const [estimates, setEstimates] = useState<UserEstimate[]>([]);
+  const [estimates, setEstimates] = useState<Record<string, UserEstimate>>({});
 
   useEffect(() => {
     if (
@@ -48,8 +54,11 @@ export function useEstimationChannel(): Game {
         _addEstimate(payload, false);
       })
       .on("broadcast", { event: CLEAR_EVENT }, function () {
-        setEstimates([]);
+        setEstimates({});
         setGameState(GameState.CHOOSING);
+      })
+      .on("broadcast", { event: VIEW_EVENT }, function () {
+        setGameState(GameState.VIEWING);
       });
 
     realtimeChannel.on("presence", { event: "sync" }, () => {
@@ -57,7 +66,7 @@ export function useEstimationChannel(): Game {
 
       if (state[room] !== undefined) {
         // @ts-ignore
-        setUsers(state[room]);
+        setUsers(new Map(state[room].map((e) => [e.id, e])));
       }
     });
 
@@ -66,6 +75,7 @@ export function useEstimationChannel(): Game {
         await realtimeChannel.track({
           user: sessionData?.user?.name,
           image: sessionData?.user?.image,
+          id: userId,
         });
       }
     });
@@ -74,23 +84,26 @@ export function useEstimationChannel(): Game {
   }, [isReady, status]);
 
   useEffect(() => {
-    if (estimates.length && estimates.length >= users.length)
+    const estimatesCount = Object.keys(estimates).length;
+
+    if (estimatesCount && estimatesCount >= users.size)
       setGameState(GameState.VIEWING);
   }, [estimates, users]);
 
   useEffect(() => {
+    const estimatesCount = Object.keys(estimates).length;
+
     if (
       gameState == GameState.CHOOSING ||
       gameState == GameState.SUBMITTED ||
-      estimates.length == 0
+      estimatesCount == 0
     ) {
       setConfetti(false);
       return;
     }
 
-    setConfetti(
-      estimates.every((e) => e.value == (estimates.at(0)?.value || "null"))
-    );
+    const arr = Object.values(estimates);
+    setConfetti(arr.every((e) => e.value == (arr.at(0)?.value || "null")));
   }, [gameState, estimates]);
 
   function submitEstimate(estimate: UserEstimate) {
@@ -104,29 +117,44 @@ export function useEstimationChannel(): Game {
   }
 
   function emitClear() {
-    setGameState(GameState.CHOOSING);
     channel
       ?.send({
         type: "broadcast",
         event: CLEAR_EVENT,
       })
       .then(() => {
-        setEstimates([]);
+        setEstimates({});
         setGameState(GameState.CHOOSING);
+      });
+  }
+
+  function emitContinue() {
+    channel
+      ?.send({
+        type: "broadcast",
+        event: VIEW_EVENT,
+      })
+      .then(() => {
+        setGameState(GameState.VIEWING);
       });
   }
 
   function _addEstimate(estimate: UserEstimate, self: boolean) {
     if (self) setGameState(GameState.SUBMITTED);
-    setEstimates((prevState) => [...prevState, estimate]);
+    setEstimates((prevState) => ({
+      ...prevState,
+      [estimate.user.id]: estimate,
+    }));
   }
 
   return {
+    myId: userId,
     onlineUsers: users,
     gameState: gameState,
     estimates: estimates,
     submit: submitEstimate,
     emitClear: emitClear,
+    emitContinue: emitContinue,
     confetti: confetti,
   };
 }

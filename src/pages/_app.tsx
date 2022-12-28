@@ -6,7 +6,6 @@ import { trpc } from "../utils/trpc";
 
 import "../styles/globals.css";
 import DefaultLayout from "../layout/default";
-import { Analytics } from "@vercel/analytics/react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,7 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <DefaultLayout>
         <Component {...pageProps} />
-        <Analytics />
+        {/*<Analytics />*/}
       </DefaultLayout>
     </SessionProvider>
   );

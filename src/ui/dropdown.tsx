@@ -12,7 +12,7 @@ export const Dropdown = (props: DropdownProps) => {
   return (
     <Menu as="div" className="right-0 ml-auto">
       <Menu.Button as={Button} className={props.className} icon={props.icon}>
-        {props.title}
+        <span className="hidden md:flex">{props.title}</span>
       </Menu.Button>
       <Transition
         as={Fragment}

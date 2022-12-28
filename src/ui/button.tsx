@@ -21,7 +21,9 @@ const Button = forwardRef(
       type={props.type}
       disabled={props.disabled || props.isLoading}
       onClick={props.onClick}
-      className={props.className}
+      className={
+        "text-white transition hover:text-yellow-500 " + props.className
+      }
     >
       {props.isLoading ? (
         <>

@@ -37,7 +37,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-      <Confetti width={width} height={height} />
+      <Confetti width={width} height={height} gravity={0.05} />
       <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
         Estim
         <span className="text-yellow-400">
