@@ -1,14 +1,17 @@
 import type { NextPage } from "next";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import supabase from "../server/supabase";
 import RoomForm from "../components/RoomForm";
+import Confetti from "react-confetti";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 const FIB_EVENT = "fib";
 
 const Home: NextPage = () => {
   const [fib, setFib] = useState(8);
+  const { width, height } = useWindowSize();
 
   const channel = supabase
     .channel("index", {
@@ -34,6 +37,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+      <Confetti width={width} height={height} />
       <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
         Estim
         <span className="text-yellow-400">
@@ -41,7 +45,7 @@ const Home: NextPage = () => {
         </span>
         r
       </h1>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center  gap-2 ">
         <RoomForm />
       </div>
     </div>

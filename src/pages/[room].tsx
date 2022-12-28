@@ -14,15 +14,18 @@ import { GameState } from "../types/game";
 import { useEstimationChannel } from "../hooks/game";
 import { useEffect, useState } from "react";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
+import Confetti from "react-confetti";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
 
 const Room: NextPage = () => {
   const { data: sessionData } = useSession();
   const { query } = useRouter();
-  const { onlineUsers, estimates, gameState, submit, emitClear } =
+  const { onlineUsers, estimates, gameState, submit, emitClear, confetti } =
     useEstimationChannel();
   const [waitingForUsers, setWaitingForUsers] = useState<string[]>([]);
+  const { width, height } = useWindowSize();
   const room = query.room;
 
   useEffect(() => {
@@ -42,6 +45,13 @@ const Room: NextPage = () => {
 
   return (
     <>
+      <Confetti
+        width={width}
+        height={height}
+        recycle={confetti}
+        className={confetti ? "" : "invisible"}
+        suppressHydrationWarning
+      />
       <Link href={"/"} className="absolute bottom-4 mx-auto">
         <button className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20">
           Home

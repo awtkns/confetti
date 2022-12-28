@@ -13,6 +13,7 @@ interface Game {
   onlineUsers: User[];
   estimates: UserEstimate[];
   gameState: GameState;
+  confetti: boolean;
   submit: (estimate: UserEstimate) => void;
   emitClear: () => void;
 }
@@ -20,6 +21,7 @@ interface Game {
 export function useEstimationChannel(): Game {
   const { data: sessionData, status } = useSession();
   const { query, isReady } = useRouter();
+  const [confetti, setConfetti] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
@@ -76,6 +78,22 @@ export function useEstimationChannel(): Game {
     if (estimates.length >= users.length) setGameState(GameState.VIEWING);
   }, [estimates, users]);
 
+  useEffect(() => {
+    if (
+      gameState == GameState.CHOOSING ||
+      gameState == GameState.SUBMITTED ||
+      estimates.length == 0
+    ) {
+      setConfetti(false);
+      return;
+    }
+
+    console.log(estimates);
+    setConfetti(
+      estimates.every((e) => e.value == (estimates.at(0)?.value || "null"))
+    );
+  }, [gameState, estimates]);
+
   function submitEstimate(estimate: UserEstimate) {
     channel
       ?.send({
@@ -110,5 +128,6 @@ export function useEstimationChannel(): Game {
     estimates: estimates,
     submit: submitEstimate,
     emitClear: emitClear,
+    confetti: confetti,
   };
 }

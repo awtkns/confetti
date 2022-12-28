@@ -14,27 +14,29 @@ export interface ButtonProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Button = forwardRef((props: ButtonProps, ref: ForwardedRef<any>) => (
-  <button
-    ref={ref}
-    type={props.type}
-    disabled={props.disabled || props.isLoading}
-    onClick={props.onClick}
-    className={props.className}
-  >
-    {props.isLoading ? (
-      <>
-        {/*<Loader className="mr-2" />*/}
-        {props.loadingText ? props.loadingText : "Loading..."}
-      </>
-    ) : (
-      <div className="flex items-center">
-        {props.icon ? <div className="mr-2">{props.icon}</div> : null}
-        {props.children}
-      </div>
-    )}
-  </button>
-));
+const Button = forwardRef<HTMLButtonElement>(
+  (props: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => (
+    <button
+      ref={ref}
+      type={props.type}
+      disabled={props.disabled || props.isLoading}
+      onClick={props.onClick}
+      className={props.className}
+    >
+      {props.isLoading ? (
+        <>
+          {/*<Loader className="mr-2" />*/}
+          {props.loadingText ? props.loadingText : "Loading..."}
+        </>
+      ) : (
+        <div className="flex items-center">
+          {props.icon ? <div className="mr-2">{props.icon}</div> : null}
+          {props.children}
+        </div>
+      )}
+    </button>
+  )
+);
 
 Button.displayName = "Button";
 export default Button;
