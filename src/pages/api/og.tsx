@@ -22,31 +22,13 @@ export default async function (req: NextRequest) {
         }}
       >
         <div tw="flex">
-          <div tw="flex flex-col md:flex-row w-full py-12 px-4 md:items-center justify-between p-8">
-            <h2 tw="flex flex-col text-3xl sm:text-4xl font-bold tracking-tight text-white text-left">
-              <span tw="text-[5rem]">🥳 Estimator</span>
-              <span tw="text-yellow-500">
+          <div tw="flex py-12 px-4 md:items-center justify-center p-8">
+            <h2 tw="flex flex-col text-3xl text-center">
+              <span tw="text-[10rem] text-white">🥳 Estimator</span>
+              <span tw="text-6xl text-yellow-500 text-center">
                 You have been invited to join a room.
               </span>
             </h2>
-            <div tw="mt-8 flex md:mt-0">
-              <div tw="flex rounded-md shadow">
-                <a
-                  href="#"
-                  tw="flex rounded-2xl bg-yellow-500 p-4 text-xl font-bold text-white no-underline transition "
-                >
-                  Join
-                </a>
-              </div>
-              <div tw="ml-3 flex rounded-md shadow">
-                <a
-                  href="#"
-                  tw="flex rounded-2xl bg-white/10 p-4 text-xl font-bold text-white no-underline transition  "
-                >
-                  Sign in
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
