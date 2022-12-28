@@ -1,6 +1,6 @@
-<h1 align="center">
-Estimator
-</h1>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/awtkns/estimator/master/public/banner.png" height="200" />
+</p>
 <p align="center">
   <em>🥳 Estimate tickets with more confetti</em> 🥳</br>
   <sub>A realtime sprint estimation tool with 100% more confetti</sub>
