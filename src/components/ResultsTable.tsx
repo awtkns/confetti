@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 
 const ResultsTable: React.FC<{
   estimates: Record<string, UserEstimate>;
-  onlineUsers: Map<string, User>;
+  onlineUsers: Record<string, User>;
 }> = ({ estimates, onlineUsers }) => {
   const [results, setResults] = useState<Map<string, UserEstimate>>(new Map());
 
   useEffect(() => {
     const copy = new Map(Object.entries(estimates));
 
-    onlineUsers.forEach((u, id) => {
+    Object.entries(onlineUsers).forEach(([id, u]) => {
       if (!copy.has(id))
         copy.set(id, {
           value: "😴",

@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import supabase from "../server/supabase";
 import RoomForm from "../components/RoomForm";
 import Confetti from "react-confetti";

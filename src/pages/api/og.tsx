@@ -1,6 +1,5 @@
 import { ImageResponse } from "@vercel/og";
 import type { NextRequest } from "next/server";
-import supabase from "../../server/supabase";
 
 export const config = {
   runtime: "experimental-edge",

@@ -39,7 +39,7 @@ const Room: NextPage = () => {
   const room = query.room;
 
   useEffect(() => {
-    const s = new Map(onlineUsers);
+    const s = new Map(Object.entries(onlineUsers));
     Object.values(estimates).forEach((e) => s.delete(e.user.id));
     setWaitingForUsers(s);
   }, [onlineUsers, estimates]);
@@ -69,7 +69,7 @@ const Room: NextPage = () => {
         </button>
       </Link>
       <span className="absolute left-2 top-2">
-        {Array.from(onlineUsers.values()).map((user, i) => (
+        {Object.values(onlineUsers).map((user, i) => (
           <img
             alt="User profile image"
             key={i}

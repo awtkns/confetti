@@ -9,21 +9,14 @@ import { FaBars, FaGithub, FaLink, FaUser } from "react-icons/fa";
 const Header: React.FC = () => {
   const { data: session, status } = useSession();
   const [showSignIn, setShowSignIn] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const [closing, setClosing] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
-    setDisabled(true);
-    setClosing(true);
     try {
       await signOut({
         callbackUrl: "/",
       });
-    } finally {
-      setDisabled(false);
-      setClosing(false);
-    }
+    } catch (ignored) {}
   };
 
   useEffect(() => {

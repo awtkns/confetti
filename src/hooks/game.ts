@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
+import { z } from "zod";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
@@ -13,9 +14,17 @@ const VIEW_EVENT = "view";
 
 const userId = nanoid();
 
+const userValidator = z.object({
+  id: z.string(),
+  user: z.string(),
+  image: z.string().url(),
+});
+
+const presenceValidator = z.array(userValidator);
+
 interface Game {
   myId: string;
-  onlineUsers: Map<string, User>;
+  onlineUsers: Record<string, User>;
   estimates: Record<string, UserEstimate>;
   gameState: GameState;
   confetti: boolean;
@@ -28,9 +37,9 @@ export function useEstimationChannel(): Game {
   const { data: sessionData, status } = useSession();
   const { query, isReady } = useRouter();
   const [confetti, setConfetti] = useState(false);
-  const [users, setUsers] = useState<Map<string, User>>(new Map());
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
+  const [users, setUsers] = useState<Record<string, User>>({});
   const [estimates, setEstimates] = useState<Record<string, UserEstimate>>({});
 
   useEffect(() => {
@@ -65,8 +74,9 @@ export function useEstimationChannel(): Game {
       const state = realtimeChannel.presenceState();
 
       if (state[room] !== undefined) {
-        // @ts-ignore
-        setUsers(new Map(state[room].map((e) => [e.id, e])));
+        presenceValidator
+          .parseAsync(state[room])
+          .then((r) => setUsers(Object.fromEntries(r.map((e) => [e.id, e]))));
       }
     });
 
@@ -81,22 +91,31 @@ export function useEstimationChannel(): Game {
     });
 
     setChannel(realtimeChannel);
-  }, [isReady, status]);
+  }, [
+    channel,
+    isReady,
+    query.room,
+    sessionData?.user?.image,
+    sessionData?.user?.name,
+    status,
+  ]);
 
   useEffect(() => {
     const estimatesCount = Object.keys(estimates).length;
+    const usersCount = Object.keys(users).length;
 
-    if (estimatesCount && estimatesCount >= users.size)
+    if (estimatesCount && estimatesCount >= usersCount)
       setGameState(GameState.VIEWING);
   }, [estimates, users]);
 
   useEffect(() => {
     const estimatesCount = Object.keys(estimates).length;
+    const usersCount = Object.keys(users).length;
 
     if (
       gameState == GameState.CHOOSING ||
       gameState == GameState.SUBMITTED ||
-      estimatesCount != users.size ||
+      estimatesCount != usersCount ||
       estimatesCount == 0
     ) {
       setConfetti(false);
@@ -105,7 +124,7 @@ export function useEstimationChannel(): Game {
 
     const arr = Object.values(estimates);
     setConfetti(arr.every((e) => e.value == (arr.at(0)?.value || "null")));
-  }, [gameState, estimates]);
+  }, [gameState, estimates, users]);
 
   function submitEstimate(estimate: UserEstimate) {
     channel
