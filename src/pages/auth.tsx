@@ -4,9 +4,9 @@ import type {
   NextPage,
 } from "next";
 import { signIn } from "next-auth/react";
-import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { useRouter } from "next/router";
-import Button from "../../ui/button";
+import Button from "../ui/button";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const Auth: NextPage = () => {
