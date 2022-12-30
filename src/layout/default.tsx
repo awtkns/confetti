@@ -1,25 +1,14 @@
 import Head from "next/head";
 import Header from "../components/Header";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { z } from "zod";
+
+import { useAuth } from "../hooks/useAuth";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const DefaultLayout = (props: LayoutProps) => {
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    if (status != "authenticated" || !session?.user) return;
-
-    const user = session.user;
-    z.string()
-      .email()
-      .parseAsync(user.email)
-      .catch(() => window.localStorage.setItem("uuid", user.id));
-  }, [session, status]);
+  useAuth();
 
   return (
     <>

@@ -3,33 +3,16 @@ import type {
   GetServerSidePropsContext,
   NextPage,
 } from "next";
-import { signIn } from "next-auth/react";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { useRouter } from "next/router";
 import Button from "../ui/button";
 import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 import Input from "../ui/input";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const Auth: NextPage = () => {
+  const auth = useAuth();
   const displayNameState = useState("");
-  const router = useRouter();
-
-  const handleSignIn = (provider: string, name?: string) => async () => {
-    let callbackUrl = `/${
-      typeof router.query.room == "string" ? router.query.room : ""
-    }`;
-    callbackUrl = encodeURI(callbackUrl);
-
-    try {
-      const id =
-        provider == "anonymous"
-          ? window.localStorage.getItem("uuid") || ""
-          : "";
-
-      await signIn(provider, { callbackUrl, name, id });
-    } catch (ignored) {}
-  };
 
   const buttonStyle =
     "mb-4 rounded-full bg-white/10 px-4 py-3 font-semibold no-underline hover:bg-white/20";
@@ -50,7 +33,7 @@ const Auth: NextPage = () => {
           ></Input>
           <button
             className="ml-2 rounded-full bg-white/10 p-2 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
-            onClick={handleSignIn("anonymous", displayNameState[0])}
+            onClick={() => auth.signIn("anonymous", displayNameState[0])}
           >
             <FaArrowRight className="h-auto text-inherit " />
           </button>
@@ -58,14 +41,14 @@ const Auth: NextPage = () => {
         <span className="m-4 w-8 rounded-full bg-white/20 pt-0.5"></span>
         <Button
           className={buttonStyle}
-          onClick={handleSignIn("github")}
+          onClick={() => auth.signIn("github")}
           icon={<FaGithub size={20} />}
         >
           Sign in with GitHub
         </Button>{" "}
         <Button
           className={buttonStyle}
-          onClick={handleSignIn("google")}
+          onClick={() => auth.signIn("google")}
           icon={<FaGoogle size={20} />}
         >
           Sign in with Google
@@ -79,7 +62,6 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
 ) => {
   const session = await getServerAuthSession(ctx);
-  console.log(session?.user?.email);
 
   if (session) {
     return {

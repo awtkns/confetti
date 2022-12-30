@@ -14,22 +14,12 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 import { imageUrl } from "../../../server/common/images";
 
-type NextAuthOptionsCallback = (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => NextAuthOptions;
-
 const adapter = PrismaAdapter(prisma);
 
 const monthFromNow = () => {
   const now = new Date(Date.now());
   return new Date(now.setMonth(now.getMonth() + 1));
 };
-
-const credentialsValidator = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1),
-});
 
 const providers = [
   GoogleProvider({
@@ -43,27 +33,45 @@ const providers = [
     allowDangerousEmailAccountLinking: true,
   }),
   CredentialsProvider({
+    type: "credentials",
     id: "anonymous",
     name: "Credentials",
     credentials: {
-      id: { type: "text" },
+      uuid: {
+        label: "",
+        type: "hidden",
+      },
       name: {
         label: "Display Name",
-        type: "text",
         placeholder: "Anonymous",
       },
     },
-    async authorize(credentials, req) {
-      const creds = credentialsValidator.parse(credentials);
+    async authorize(credentials) {
+      if (!credentials) return null;
 
-      if (creds.id) {
-        let user = await adapter.getUser(creds.id);
+      const name = await z
+        .string()
+        .min(1)
+        .parseAsync(credentials.name)
+        .catch(() => null);
+
+      if (!name) return null;
+
+      const uuid = await z
+        .string()
+        .uuid()
+        .optional()
+        .parseAsync(credentials.uuid)
+        .catch(() => null);
+
+      if (uuid) {
+        let user = await adapter.getUserByEmail(uuid);
         if (user) {
-          if (user.name != creds.name) {
+          if (user.name != name) {
             user = await adapter.updateUser({
               id: user.id,
-              name: creds.name,
-              image: imageUrl(creds.name),
+              name: name,
+              image: imageUrl(name),
             });
           }
           return user;
@@ -71,9 +79,9 @@ const providers = [
       }
 
       return adapter.createUser({
-        name: creds.name,
+        name: name,
         email: randomUUID?.(),
-        image: imageUrl(creds.name),
+        image: imageUrl(name),
         emailVerified: null,
       });
     },
@@ -88,17 +96,14 @@ function anonymousAuth(req: NextApiRequest) {
   );
 }
 
-const authOptions: NextAuthOptionsCallback = (
-  req: NextApiRequest,
-  res: NextApiResponse
-): AuthOptions => {
+const options = (req: NextApiRequest, res: NextApiResponse): AuthOptions => {
   return {
     callbacks: {
       async session({ session, user }) {
         if (session.user) session.user.id = user.id;
         return session;
       },
-      async signIn({ user, account, profile, email, credentials }) {
+      async signIn({ user }) {
         if (anonymousAuth(req) && user) {
           const session = await adapter.createSession({
             sessionToken: randomUUID?.(),
@@ -148,11 +153,11 @@ const authOptions: NextAuthOptionsCallback = (
 };
 
 const auth = (req: NextApiRequest, res: NextApiResponse) =>
-  NextAuth(req, res, authOptions(req, res));
+  NextAuth(req, res, options(req, res));
 
 export default auth;
 
-export const ssrOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: adapter,
   providers: providers,
 };
