@@ -3,36 +3,19 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import supabase from "../server/supabase";
 import RoomForm from "../components/RoomForm";
 import Test from "../components/Test";
 
 const FIB = [1, 2, 3, 5, 8, 13];
-const FIB_EVENT = "fib";
 
 const Home: NextPage = () => {
   const [fib, setFib] = useState(8);
 
-  const channel = supabase
-    .channel("index", {
-      config: {
-        broadcast: { self: false, ack: true },
-      },
-    })
-    .on("broadcast", { event: FIB_EVENT }, ({ payload }) => {
-      setFib(payload.value);
-    })
-    .subscribe();
-
   function handleClick() {
     const s = new Set(FIB);
-
     s.delete(fib);
     const x = Array.from(s)[Math.floor(Math.random() * s.size)] || 0;
-
-    channel
-      .send({ type: "broadcast", event: FIB_EVENT, payload: { value: x } })
-      .then(() => setFib(x));
+    setFib(x);
   }
 
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
