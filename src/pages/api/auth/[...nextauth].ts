@@ -11,6 +11,7 @@ import { getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { decode, encode } from "next-auth/jwt";
 import { randomUUID } from "crypto";
+import { z } from "zod";
 
 type NextAuthOptionsCallback = (
   req: NextApiRequest,
@@ -23,6 +24,11 @@ const monthFromNow = () => {
   const now = new Date(Date.now());
   return new Date(now.setMonth(now.getMonth() + 1));
 };
+
+const credentialsValidator = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1),
+});
 
 const providers = [
   GoogleProvider({
@@ -39,27 +45,28 @@ const providers = [
     id: "anonymous",
     name: "Credentials",
     credentials: {
-      email: {},
-      displayName: {
+      id: { type: "text" },
+      name: {
         label: "Display Name",
         type: "text",
         placeholder: "Anonymous",
       },
     },
     async authorize(credentials, req) {
-      console.log("Authorize User Credentials: ");
-      console.log(req);
+      const creds = credentialsValidator.parse(credentials);
 
-      return (
-        (await adapter.getUserByEmail("test@example.com")) ||
-        (await adapter.createUser({
-          name: credentials?.displayName || "BUG",
-          email: "test@example.com",
-          image:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
-          emailVerified: null,
-        }))
-      );
+      if (creds.id) {
+        const user = adapter.getUser(creds.id);
+        if (user) return user;
+      }
+
+      return adapter.createUser({
+        name: creds.name,
+        email: "",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+        emailVerified: null,
+      });
     },
   }),
 ];
@@ -131,10 +138,12 @@ const authOptions: NextAuthOptionsCallback = (
   };
 };
 
+const auth = (req: NextApiRequest, res: NextApiResponse) =>
+  NextAuth(req, res, authOptions(req, res));
+
+export default auth;
+
 export const ssrOptions: NextAuthOptions = {
   adapter: adapter,
   providers: providers,
 };
-
-export default (req: NextApiRequest, res: NextApiResponse) =>
-  NextAuth(req, res, authOptions(req, res));

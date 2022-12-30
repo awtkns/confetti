@@ -8,16 +8,25 @@ import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { useRouter } from "next/router";
 import Button from "../ui/button";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import Input from "../ui/input";
+import { useState } from "react";
 
 const Auth: NextPage = () => {
+  const displayNameState = useState("");
   const router = useRouter();
 
-  const handleSignIn = (provider: string) => async () => {
+  const handleSignIn = (provider: string, name?: string) => async () => {
     try {
       const callbackUrl = `/${
         typeof router.query.room == "string" ? router.query.room : ""
       }`;
-      await signIn(provider, { callbackUrl });
+
+      const id =
+        provider == "anonymous"
+          ? window.localStorage.getItem("uuid") || ""
+          : "";
+
+      await signIn(provider, { callbackUrl, name, id });
     } catch (ignored) {}
   };
 
@@ -45,9 +54,10 @@ const Auth: NextPage = () => {
         >
           Sign in with Google
         </Button>
+        <Input model={displayNameState} />
         <Button
           className={buttonStyle}
-          onClick={handleSignIn("anon")}
+          onClick={handleSignIn("anonymous", displayNameState[0])}
           icon={<FaGoogle size={20} />}
         >
           Sign in with Local
@@ -61,6 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
 ) => {
   const session = await getServerAuthSession(ctx);
+  console.log(session?.user?.email);
 
   if (session) {
     return {

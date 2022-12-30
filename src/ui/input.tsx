@@ -18,7 +18,7 @@ const ERROR_STYLE =
 
 export interface InputProps<T> extends InputHTMLAttributes<HTMLInputElement> {
   model: [T, Dispatch<SetStateAction<T>>];
-  error: [boolean, Dispatch<SetStateAction<boolean>>];
+  error?: [boolean, Dispatch<SetStateAction<boolean>>];
   enterPressed?: () => void;
 }
 
@@ -26,7 +26,7 @@ const Input = forwardRef(
   (props: InputProps<string>, ref: ForwardedRef<HTMLInputElement>) => {
     const { model, error, enterPressed, onKeyDown, className, ...otherProps } =
       props;
-    const [isError, setIsError] = error;
+    const [isError, setIsError] = error || [false, () => undefined];
 
     const keyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
       try {
