@@ -45,7 +45,7 @@ const Home: NextPage = () => {
         </span>
         r
       </h1>
-      <div className="flex flex-col items-center  gap-2 ">
+      <div className="flex flex-col items-center gap-2 ">
         <RoomForm />
       </div>
     </div>

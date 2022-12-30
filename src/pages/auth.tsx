@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import { useRouter } from "next/router";
 import Button from "../ui/button";
-import { FaGithub, FaGoogle } from "react-icons/fa";
+import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 import Input from "../ui/input";
 import { useState } from "react";
 
@@ -38,8 +38,23 @@ const Auth: NextPage = () => {
       <div className="mt-16 flex flex-col items-center justify-center rounded-full">
         <h1 className="mb-8 text-4xl font-bold text-white">🎉 Welcome 🎉</h1>
         <p className="text-md mb-8 font-bold text-white">
-          Sign in to start estimating
+          Choose a display name or sign in
         </p>
+        <div className="flex items-center">
+          <Input
+            type="text"
+            className="py-2"
+            placeholder="Display Name"
+            model={displayNameState}
+          ></Input>
+          <button
+            className="ml-2 rounded-full bg-white/10 p-2 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+            onClick={handleSignIn("anonymous", displayNameState[0])}
+          >
+            <FaArrowRight className="h-auto text-inherit " />
+          </button>
+        </div>
+        <span className="m-4 w-8 rounded-full bg-white/20 pt-0.5"></span>
         <Button
           className={buttonStyle}
           onClick={handleSignIn("github")}
@@ -53,14 +68,6 @@ const Auth: NextPage = () => {
           icon={<FaGoogle size={20} />}
         >
           Sign in with Google
-        </Button>
-        <Input model={displayNameState} />
-        <Button
-          className={buttonStyle}
-          onClick={handleSignIn("anonymous", displayNameState[0])}
-          icon={<FaGoogle size={20} />}
-        >
-          Sign in with Local
         </Button>
       </div>
     </div>

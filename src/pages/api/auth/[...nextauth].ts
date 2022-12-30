@@ -12,6 +12,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { decode, encode } from "next-auth/jwt";
 import { randomUUID } from "crypto";
 import { z } from "zod";
+import { imageUrl } from "../../../server/common/images";
 
 type NextAuthOptionsCallback = (
   req: NextApiRequest,
@@ -59,7 +60,11 @@ const providers = [
         let user = await adapter.getUser(creds.id);
         if (user) {
           if (user.name != creds.name) {
-            user = await adapter.updateUser({ id: user.id, name: creds.name });
+            user = await adapter.updateUser({
+              id: user.id,
+              name: creds.name,
+              image: imageUrl(creds.name),
+            });
           }
           return user;
         }
@@ -68,8 +73,7 @@ const providers = [
       return adapter.createUser({
         name: creds.name,
         email: "",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+        image: imageUrl(creds.name),
         emailVerified: null,
       });
     },

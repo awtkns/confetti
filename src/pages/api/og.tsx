@@ -7,8 +7,35 @@ export const config = {
 
 export default async function (req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const room = searchParams.get("room");
+  const name = searchParams.get("letter");
+  const color = searchParams.get("color");
 
+  if (name && color) {
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#" + color,
+          }}
+        >
+          <span tw="text-[15rem] text-white">{name.at(0)}</span>
+        </div>
+      ),
+      {
+        width: 400,
+        height: 400,
+        emoji: "twemoji",
+      }
+    );
+  }
+
+  const room = searchParams.get("room");
   return new ImageResponse(
     (
       <div
