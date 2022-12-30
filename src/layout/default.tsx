@@ -12,8 +12,7 @@ const DefaultLayout = (props: LayoutProps) => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status != "authenticated" || !session?.user || session?.user?.email)
-      return;
+    if (status != "authenticated" || !session?.user) return;
 
     const user = session.user;
     z.string()
