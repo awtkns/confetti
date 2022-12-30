@@ -16,11 +16,12 @@ const Auth: NextPage = () => {
   const router = useRouter();
 
   const handleSignIn = (provider: string, name?: string) => async () => {
-    try {
-      const callbackUrl = `/${
-        typeof router.query.room == "string" ? router.query.room : ""
-      }`;
+    let callbackUrl = `/${
+      typeof router.query.room == "string" ? router.query.room : ""
+    }`;
+    callbackUrl = encodeURI(callbackUrl);
 
+    try {
       const id =
         provider == "anonymous"
           ? window.localStorage.getItem("uuid") || ""

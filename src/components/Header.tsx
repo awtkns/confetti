@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { FaBars, FaGithub, FaLink, FaUser } from "react-icons/fa";
+import { FaGithub, FaHashtag, FaLink, FaUser } from "react-icons/fa";
 
 const Header: React.FC = () => {
   const { data: session, status } = useSession();
@@ -29,9 +29,9 @@ const Header: React.FC = () => {
         <div className="relative flex items-center">
           {(status == "authenticated" && (
             <Dropdown
-              title={session?.user?.name || "Menu"}
-              className="ml-auto block px-4 text-lg text-white hover:text-yellow-500"
-              icon={<FaBars className="h-4 text-inherit" />}
+              title={session?.user?.name || "="}
+              className="ml-auto block pr-4 text-lg text-white hover:text-yellow-500"
+              icon={<FaHashtag className="h-4 text-inherit" />}
             >
               {status === "authenticated" && (
                 <DropdownItem
