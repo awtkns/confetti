@@ -56,8 +56,13 @@ const providers = [
       const creds = credentialsValidator.parse(credentials);
 
       if (creds.id) {
-        const user = adapter.getUser(creds.id);
-        if (user) return user;
+        let user = await adapter.getUser(creds.id);
+        if (user) {
+          if (user.name != creds.name) {
+            user = await adapter.updateUser({ id: user.id, name: creds.name });
+          }
+          return user;
+        }
       }
 
       return adapter.createUser({
