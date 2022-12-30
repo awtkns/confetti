@@ -72,7 +72,7 @@ const providers = [
 
       return adapter.createUser({
         name: creds.name,
-        email: "",
+        email: randomUUID?.(),
         image: imageUrl(creds.name),
         emailVerified: null,
       });
