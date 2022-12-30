@@ -45,6 +45,13 @@ const Auth: NextPage = () => {
         >
           Sign in with Google
         </Button>
+        <Button
+          className={buttonStyle}
+          onClick={handleSignIn("anon")}
+          icon={<FaGoogle size={20} />}
+        >
+          Sign in with Local
+        </Button>
       </div>
     </div>
   );

@@ -157,7 +157,6 @@ export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
 ) => {
   const session = await getServerAuthSession(ctx);
-
   if (!session) {
     return {
       redirect: {
