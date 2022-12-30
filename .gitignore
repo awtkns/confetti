@@ -42,3 +42,4 @@ yarn-error.log*
 *.tsbuildinfo
 
 .idea
+.swc
