@@ -270,7 +270,9 @@ export const imageUrl = (name: string): string => {
   const i = Math.floor(Math.random() * entries.length);
   const color = entries.at(i) || ["black", { "700": "#000000" }];
 
-  return `https://estimator.awtkns.com/api/og?letter=${name.at(
-    0
-  )}&color=${color[1]["700"].replace("#", "")}`;
+  return encodeURI(
+    `https://estimator.awtkns.com/api/og?letter=${[...name].at(
+      0
+    )}&color=${color[1]["700"].replace("#", "")}`
+  );
 };

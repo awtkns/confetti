@@ -24,7 +24,7 @@ export default async function (req: NextRequest) {
             backgroundColor: "#" + color,
           }}
         >
-          <span tw="text-[15rem] text-white">{name.at(0)}</span>
+          <span tw="text-[15rem] text-white">{name}</span>
         </div>
       ),
       {
