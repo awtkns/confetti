@@ -4,6 +4,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 import Input from "../ui/input";
+import { motion } from "framer-motion";
 
 const roomValidator = z.string().min(1);
 
@@ -21,7 +22,12 @@ const RoomForm: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center">
+    <motion.div
+      className="flex items-center"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 0.5, delay: 0.25, type: "spring" }}
+    >
       <Input
         type="text"
         className="py-2"
@@ -30,7 +36,10 @@ const RoomForm: React.FC = () => {
         error={error}
         enterPressed={joinRoom}
       ></Input>
-      <button
+      <motion.button
+        initial={{ x: -50 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.5, delay: 0.25, type: "spring" }}
         className="ml-2 rounded-full bg-white/10 p-2 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
         onClick={(e) => {
           e.preventDefault();
@@ -42,8 +51,8 @@ const RoomForm: React.FC = () => {
         }}
       >
         <FaArrowRight className="h-4 text-inherit " />
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 

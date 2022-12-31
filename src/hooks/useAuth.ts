@@ -1,7 +1,8 @@
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { z } from "zod";
 import { useRouter } from "next/router";
+import type { Session } from "next-auth";
 
 const UUID_KEY = "uuid";
 
@@ -9,6 +10,9 @@ type Provider = "anonymous" | "google" | "github";
 
 interface Auth {
   signIn: (provider: Provider, name?: string) => void;
+  signOut: () => void;
+  status: "authenticated" | "unauthenticated" | "loading";
+  session: Session | null;
 }
 
 export function useAuth(): Auth {
@@ -42,7 +46,16 @@ export function useAuth(): Auth {
     });
   };
 
+  const handleSignOut = async () => {
+    await signOut({
+      callbackUrl: "/",
+    }).catch();
+  };
+
   return {
     signIn: handleSignIn,
+    signOut: handleSignOut,
+    status,
+    session,
   };
 }
