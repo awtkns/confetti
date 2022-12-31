@@ -55,9 +55,9 @@ const Header: React.FC = () => {
         <div className="relative flex items-center ">
           <AnimatePresence>
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.25, type: "spring" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, type: "spring" }}
               className="ml-auto pr-4 text-lg text-white hover:text-yellow-500"
             >
               {authenticated || unauthenticated}

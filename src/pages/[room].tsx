@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { AnimatePresence, motion } from "framer-motion";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
 
@@ -54,6 +55,70 @@ const Room: NextPage = () => {
     submit({ user, value: estimate });
   }
 
+  const choosing = gameState == GameState.CHOOSING && (
+    <AnimatePresence>
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: "spring" }}
+        className="m-16 grid grid-cols-3 gap-4"
+      >
+        {FIB.map((x, i) => (
+          <button
+            className={
+              x === ""
+                ? "invisible"
+                : "rounded-2xl bg-white/10 p-4 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-8 lg:p-12 lg:text-4xl"
+            }
+            onClick={() => estimateClicked(x)}
+            key={i}
+          >
+            {x}
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  );
+  const waiting = gameState == GameState.SUBMITTED && (
+    <>
+      <p className="text-center text-2xl text-white">Waiting for others...</p>
+      <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
+        <thead>
+          <tr>
+            <td className="px-4 py-2">Waiting for:</td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from(waitingForUsers.values()).map((e, i) => (
+            <tr key={i}>
+              <td className="px-4 py-2 font-thin">{e.user}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button
+        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+        onClick={emitContinue}
+      >
+        View results
+      </button>
+    </>
+  );
+  const viewing = gameState == GameState.VIEWING && (
+    <>
+      <ResultsTable
+        estimates={estimates}
+        onlineUsers={onlineUsers}
+      ></ResultsTable>
+      <button
+        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+        onClick={emitClear}
+      >
+        New
+      </button>
+    </>
+  );
   return (
     <>
       <Confetti
@@ -90,65 +155,7 @@ const Room: NextPage = () => {
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
 
-      {(gameState == GameState.CHOOSING && (
-        <div className="m-16 grid grid-cols-3 gap-4">
-          {FIB.map((x, i) => (
-            <button
-              className={
-                x === ""
-                  ? "invisible"
-                  : "rounded-2xl bg-white/10 p-4 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-8 lg:p-12 lg:text-4xl"
-              }
-              onClick={() => estimateClicked(x)}
-              key={i}
-            >
-              {x}
-            </button>
-          ))}
-        </div>
-      )) ||
-        (gameState == GameState.SUBMITTED && (
-          <>
-            <p className="text-center text-2xl text-white">
-              Waiting for others...
-            </p>
-            <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
-              <thead>
-                <tr>
-                  <td className="px-4 py-2">Waiting for:</td>
-                  <td></td>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from(waitingForUsers.values()).map((e, i) => (
-                  <tr key={i}>
-                    <td className="px-4 py-2 font-thin">{e.user}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button
-              className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
-              onClick={emitContinue}
-            >
-              View results
-            </button>
-          </>
-        )) ||
-        (gameState == GameState.VIEWING && (
-          <>
-            <ResultsTable
-              estimates={estimates}
-              onlineUsers={onlineUsers}
-            ></ResultsTable>
-            <button
-              className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
-              onClick={emitClear}
-            >
-              New
-            </button>
-          </>
-        ))}
+      {choosing || waiting || viewing}
     </>
   );
 };
