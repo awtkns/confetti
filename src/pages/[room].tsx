@@ -16,9 +16,8 @@ import { useEffect, useState } from "react";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { AnimatePresence, motion } from "framer-motion";
-
-const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
+import { AnimatePresence } from "framer-motion";
+import EstimateGrid from "../components/EstimateGrid";
 
 const Room: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -45,38 +44,9 @@ const Room: NextPage = () => {
     setWaitingForUsers(s);
   }, [onlineUsers, estimates]);
 
-  function estimateClicked(estimate: string) {
-    const user: User = {
-      user: sessionData?.user?.name || "Anonymous",
-      image: sessionData?.user?.image || "",
-      id: myId,
-    };
-
-    submit({ user, value: estimate });
-  }
-
   const choosing = gameState == GameState.CHOOSING && (
     <AnimatePresence>
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.5, type: "spring" }}
-        className="m-16 grid grid-cols-3 gap-4"
-      >
-        {FIB.map((x, i) => (
-          <button
-            className={
-              x === ""
-                ? "invisible"
-                : "rounded-2xl bg-white/10 p-4 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-8 lg:p-12 lg:text-4xl"
-            }
-            onClick={() => estimateClicked(x)}
-            key={i}
-          >
-            {x}
-          </button>
-        ))}
-      </motion.div>
+      <EstimateGrid session={sessionData} submit={submit} myId={myId} />
     </AnimatePresence>
   );
   const waiting = gameState == GameState.SUBMITTED && (
