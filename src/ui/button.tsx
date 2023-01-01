@@ -1,5 +1,3 @@
-// import Loader from "@/motions/loader";
-
 import type { ForwardedRef } from "react";
 import { forwardRef } from "react";
 

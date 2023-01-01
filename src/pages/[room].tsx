@@ -18,6 +18,7 @@ import Confetti from "react-confetti";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { AnimatePresence } from "framer-motion";
 import EstimateGrid from "../components/EstimateGrid";
+import PopIn from "../ui/popin";
 
 const Room: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -45,13 +46,11 @@ const Room: NextPage = () => {
   }, [onlineUsers, estimates]);
 
   const choosing = gameState == GameState.CHOOSING && (
-    <AnimatePresence>
-      <EstimateGrid session={sessionData} submit={submit} myId={myId} />
-    </AnimatePresence>
+    <EstimateGrid session={sessionData} submit={submit} myId={myId} />
   );
   const waiting = gameState == GameState.SUBMITTED && (
-    <>
-      <p className="text-center text-2xl text-white">Waiting for others...</p>
+    <PopIn>
+      {/*<p className="text-center text-2xl text-white">Waiting for others...</p>*/}
       <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
         <thead>
           <tr>
@@ -73,10 +72,10 @@ const Room: NextPage = () => {
       >
         View results
       </button>
-    </>
+    </PopIn>
   );
   const viewing = gameState == GameState.VIEWING && (
-    <>
+    <PopIn>
       <ResultsTable
         estimates={estimates}
         onlineUsers={onlineUsers}
@@ -87,7 +86,7 @@ const Room: NextPage = () => {
       >
         New
       </button>
-    </>
+    </PopIn>
   );
   return (
     <>
@@ -124,8 +123,7 @@ const Room: NextPage = () => {
       <p className="text-center text-2xl text-white">
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
-
-      {choosing || waiting || viewing}
+      <AnimatePresence>{choosing || waiting || viewing}</AnimatePresence>
     </>
   );
 };
@@ -148,5 +146,4 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-// noinspection JSUnusedGlobalSymbols
 export default Room;

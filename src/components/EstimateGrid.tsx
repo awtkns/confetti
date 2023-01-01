@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import type { User, UserEstimate } from "../types/game";
 import type { Session } from "next-auth";
+import PopIn from "../ui/popin";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
 
@@ -19,28 +19,22 @@ const EstimateGrid: React.FC<{
     submit({ user, value: estimate });
   }
 
-  const buttonStyle = (value: string): string =>
-    value === ""
-      ? "invisible"
-      : "rounded-2xl bg-white/10 p-4 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-8 lg:p-12 lg:text-4xl";
-
   return (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.5, type: "spring" }}
-      className="m-16 grid grid-cols-3 gap-4"
-    >
-      {FIB.map((x, i) => (
-        <button
-          key={i}
-          className={buttonStyle(x)}
-          onClick={() => estimateClicked(x)}
-        >
-          {x}
-        </button>
-      ))}
-    </motion.div>
+    <PopIn className="m-4 grid grid-cols-3 gap-4">
+      {FIB.map((value, i) =>
+        value === "" ? (
+          <div key={i}></div>
+        ) : (
+          <button
+            key={i}
+            onClick={() => estimateClicked(value)}
+            className="rounded-2xl bg-white/10 p-8 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
+          >
+            {value}
+          </button>
+        )
+      )}
+    </PopIn>
   );
 };
 
