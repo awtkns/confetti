@@ -23,7 +23,9 @@ describe("Image URL Generation", () => {
   });
   it("should handle emojis", () => {
     expect(imageUrl(email, "😃")).toMatch("text=%F0%9F%98%83");
-    expect(imageUrl(email, " 👀🎉 📷🎉")).toMatch("text=%F0%9F%98%83");
+    expect(imageUrl(email, " 👀🎉 📷🎉")).toMatch(
+      "text=%F0%9F%91%80%F0%9F%93%B7"
+    );
   });
   it("should handle empty name", () => {
     expect(imageUrl(email, "")).toMatch(/^((?!text=).)*$/);
