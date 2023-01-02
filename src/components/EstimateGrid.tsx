@@ -19,20 +19,21 @@ const EstimateGrid: React.FC<{
     submit({ user, value: estimate });
   }
 
+  const hidden = (key: number) => <div key={key} className="invisible"></div>;
+  const button = (key: number, value: string) => (
+    <button
+      key={key}
+      onClick={() => estimateClicked(value)}
+      className="rounded-2xl bg-white/10 p-8 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
+    >
+      {value}
+    </button>
+  );
+
   return (
     <PopIn className="m-4 grid grid-cols-3 gap-4">
-      {FIB.map((value, i) =>
-        value === "" ? (
-          <div key={i}></div>
-        ) : (
-          <button
-            key={i}
-            onClick={() => estimateClicked(value)}
-            className="rounded-2xl bg-white/10 p-8 text-3xl font-bold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
-          >
-            {value}
-          </button>
-        )
+      {FIB.map((value, key) =>
+        value === "" ? hidden(key) : button(key, value)
       )}
     </PopIn>
   );

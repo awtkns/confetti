@@ -19,6 +19,7 @@ import { useWindowSize } from "../hooks/useWindowSize";
 import { AnimatePresence } from "framer-motion";
 import EstimateGrid from "../components/EstimateGrid";
 import PopIn from "../ui/popin";
+import OnlineUsers from "../components/OnlineUsers";
 
 const Room: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -48,10 +49,10 @@ const Room: NextPage = () => {
   const choosing = gameState == GameState.CHOOSING && (
     <EstimateGrid session={sessionData} submit={submit} myId={myId} />
   );
+
   const waiting = gameState == GameState.SUBMITTED && (
-    <PopIn>
-      {/*<p className="text-center text-2xl text-white">Waiting for others...</p>*/}
-      <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
+    <PopIn className="flex flex-col items-center">
+      <table className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white">
         <thead>
           <tr>
             <td className="px-4 py-2">Waiting for:</td>
@@ -75,11 +76,12 @@ const Room: NextPage = () => {
     </PopIn>
   );
   const viewing = gameState == GameState.VIEWING && (
-    <PopIn>
+    <PopIn className="flex flex-col items-center">
       <ResultsTable
         estimates={estimates}
         onlineUsers={onlineUsers}
-      ></ResultsTable>
+        className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white"
+      />
       <button
         className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
         onClick={emitClear}
@@ -102,21 +104,11 @@ const Room: NextPage = () => {
           Home
         </button>
       </Link>
-      <span className="absolute left-2 top-2">
-        {Object.values(onlineUsers).map((user, i) => (
-          <img
-            alt="User profile image"
-            key={i}
-            src={user.image}
-            className={
-              user.id === myId
-                ? " m-1 h-8 rounded-full border-2 border-yellow-500 drop-shadow-2xl"
-                : " m-1 h-8 rounded-full drop-shadow-2xl"
-            }
-            referrerPolicy="no-referrer"
-          />
-        ))}
-      </span>
+      <OnlineUsers
+        users={onlineUsers}
+        myId={myId}
+        className="absolute left-2 top-2"
+      />
       <h1 className=" mt-16 py-4 text-4xl font-extrabold tracking-tight text-white sm:text-[5rem]">
         Estimating
       </h1>

@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 const ResultsTable: React.FC<{
   estimates: Record<string, UserEstimate>;
   onlineUsers: Record<string, User>;
-}> = ({ estimates, onlineUsers }) => {
+  className?: string;
+}> = ({ estimates, onlineUsers, className }) => {
   const [results, setResults] = useState<Map<string, UserEstimate>>(new Map());
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const ResultsTable: React.FC<{
   }, [estimates, onlineUsers]);
 
   return (
-    <table className="m-16 rounded-2xl bg-white/10 text-xl font-semibold text-white">
+    <table className={className}>
       <thead>
         <tr>
           <td className="px-4 py-2">Results</td>
