@@ -71,17 +71,18 @@ const providers = [
             user = await adapter.updateUser({
               id: user.id,
               name: name,
-              image: imageUrl(name),
+              image: imageUrl(user.email, name),
             });
           }
           return user;
         }
       }
 
+      const email = randomUUID?.();
       return adapter.createUser({
         name: name,
-        email: randomUUID?.(),
-        image: imageUrl(name),
+        email: email,
+        image: imageUrl(email, name),
         emailVerified: null,
       });
     },
