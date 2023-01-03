@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { FaGithub, FaHashtag, FaLink, FaUser } from "react-icons/fa";
+import { FaGithub, FaHashtag, FaHome, FaLink, FaUser } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
 
 const Header: React.FC = () => {
@@ -24,15 +24,18 @@ const Header: React.FC = () => {
         </DropdownItem>
       )}
 
-      <a
-        href="https://github.com/awtkns/estimator/issues/new"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
+      <DropdownItem icon={<FaHome className="h-4 text-inherit" />}>
+        <Link href="/">Home</Link>
+      </DropdownItem>
+      <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
+        <a
+          href="https://github.com/awtkns/estimator/issues/new"
+          target="_blank"
+          rel="noreferrer"
+        >
           Report a bug
-        </DropdownItem>
-      </a>
+        </a>
+      </DropdownItem>
     </Dropdown>
   );
 

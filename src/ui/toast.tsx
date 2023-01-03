@@ -5,9 +5,9 @@ import React from "react";
 
 type Props = {
   model: [boolean, Dispatch<SetStateAction<boolean>>];
-  onAction: () => void;
+  onAction?: () => void;
   title: string;
-  description: string;
+  description?: string;
 };
 
 const Toast = (props: Props) => {
@@ -37,33 +37,33 @@ const Toast = (props: Props) => {
               <ToastPrimitive.Title className="text-lg font-medium text-white">
                 {props.title}
               </ToastPrimitive.Title>
-              <ToastPrimitive.Description className="dark:text-gray-10 text-md mt-1 rounded-md bg-slate-800/50 p-1 text-white">
-                <pre className="overflow-hidden text-ellipsis">
-                  {props.description}
-                </pre>
-              </ToastPrimitive.Description>
+              {props.description && (
+                <ToastPrimitive.Description className="dark:text-gray-10 text-md mt-1 rounded-md bg-slate-800/50 p-1 text-white">
+                  <pre className="overflow-hidden text-ellipsis">
+                    {props.description}
+                  </pre>
+                </ToastPrimitive.Description>
+              )}
             </div>
           </div>
           <div className="mx-4 flex items-center justify-center py-4">
             <div className="flex flex-col ">
-              <div className="">
+              {props.onAction && (
                 <ToastPrimitive.Action
                   altText="copy"
                   className="text-md flex w-full items-center justify-center rounded-2xl border border-transparent px-3 py-2 font-medium text-yellow-500 hover:bg-white/20 "
                   onClick={(e) => {
                     e.preventDefault();
-                    props.onAction();
+                    if (props.onAction) props.onAction();
                     setOpen(false);
                   }}
                 >
                   Copy
                 </ToastPrimitive.Action>
-              </div>
-              <div className="">
-                <ToastPrimitive.Close className="text-md flex w-full items-center justify-center rounded-2xl border border-transparent px-3 py-2 font-medium text-white hover:bg-white/20 ">
-                  Close
-                </ToastPrimitive.Close>
-              </div>
+              )}
+              <ToastPrimitive.Close className="text-md flex w-full items-center justify-center rounded-2xl border border-transparent px-3 py-2 font-medium text-white hover:bg-white/20 ">
+                Close
+              </ToastPrimitive.Close>
             </div>
           </div>
         </div>

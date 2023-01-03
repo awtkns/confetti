@@ -19,6 +19,8 @@ import EstimateGrid from "../components/EstimateGrid";
 import PopIn from "../ui/popin";
 import OnlineUsers from "../components/OnlineUsers";
 import Toast from "../ui/toast";
+import Button from "../ui/button";
+import { FaShare } from "react-icons/fa";
 
 const Room: NextPage<{ host: string }> = ({ host }) => {
   const { data: sessionData } = useSession();
@@ -38,6 +40,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
   );
   const [isToastOpen, setToastOpen] = useState(false);
   const [isLoading, setLoading] = useState(true);
+  const [showCopied, setShowCopied] = useState(false);
   const { width, height } = useWindowSize();
   const room = router.query.room;
 
@@ -110,25 +113,18 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
       <Toast
         model={[isToastOpen, setToastOpen]}
         onAction={() => {
-          window.navigator.clipboard.writeText(host + router.asPath).then();
+          window.navigator.clipboard
+            .writeText(host + router.asPath)
+            .then(() => setShowCopied(true));
         }}
         title="Invite link available! 🎉"
         description={host + router.asPath}
       />
-      <div className="absolute bottom-4 mx-auto flex">
-        <AnimatePresence>
-          {isLoading || isToastOpen || (
-            <PopIn>
-              <button
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
-                onClick={() => setToastOpen(true)}
-              >
-                Invite
-              </button>
-            </PopIn>
-          )}
-        </AnimatePresence>
-      </div>
+      <Toast
+        model={[showCopied, setShowCopied]}
+        title="Invite link copied! 😎"
+      />
+
       <OnlineUsers
         users={onlineUsers}
         myId={myId}
@@ -140,7 +136,20 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
       <p className="text-center text-2xl text-white">
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
-      <AnimatePresence>{choosing || waiting || viewing}</AnimatePresence>
+      <AnimatePresence>
+        {choosing || waiting || viewing}
+        {isLoading || isToastOpen || showCopied || (
+          <PopIn className="absolute bottom-4 mx-auto flex">
+            <Button
+              icon={<FaShare />}
+              className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+              onClick={() => setToastOpen(true)}
+            >
+              Invite
+            </Button>
+          </PopIn>
+        )}
+      </AnimatePresence>
     </>
   );
 };
