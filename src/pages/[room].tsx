@@ -79,7 +79,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
         </tbody>
       </table>
       <button
-        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500"
         onClick={emitContinue}
       >
         View results
@@ -91,10 +91,10 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
       <ResultsTable
         estimates={estimates}
         onlineUsers={onlineUsers}
-        className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white"
+        className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white shadow-lg"
       />
       <button
-        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500"
         onClick={emitClear}
       >
         New
@@ -130,7 +130,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
         myId={myId}
         className="absolute left-2 top-2"
       />
-      <h1 className=" mt-16 py-4 text-4xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+      <h1 className=" mt-16 py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem]">
         Estimating
       </h1>
       <p className="text-center text-2xl text-white">
@@ -142,7 +142,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
           <PopIn className="absolute bottom-4 mx-auto flex">
             <Button
               icon={<FaShare />}
-              className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+              className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500"
               onClick={() => setToastOpen(true)}
             >
               Invite

@@ -27,15 +27,17 @@ const Header: React.FC = () => {
       <DropdownItem icon={<FaHome className="h-4 text-inherit" />}>
         <Link href="/">Home</Link>
       </DropdownItem>
-      <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
-        <a
-          href="https://github.com/awtkns/estimator/issues/new"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Report a bug
-        </a>
-      </DropdownItem>
+      {router.route != "/" && (
+        <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
+          <a
+            href="https://github.com/awtkns/estimator/issues/new"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Report a bug
+          </a>
+        </DropdownItem>
+      )}
     </Dropdown>
   );
 

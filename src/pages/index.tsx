@@ -1,51 +1,51 @@
 import type { NextPage } from "next";
 
-import { useState } from "react";
-import supabase from "../server/supabase";
+import { useEffect, useState } from "react";
 import RoomForm from "../components/RoomForm";
 import Confetti from "react-confetti";
 import { useWindowSize } from "../hooks/useWindowSize";
+import { AnimatePresence, motion } from "framer-motion";
 
-const FIB = [1, 2, 3, 5, 8, 13];
-const FIB_EVENT = "fib";
+const FIB = ["1", "8"];
 
 const Home: NextPage = () => {
-  const [fib, setFib] = useState(8);
+  const [fib, setFib] = useState("1");
   const { width, height } = useWindowSize();
 
-  const channel = supabase
-    .channel("index", {
-      config: {
-        broadcast: { self: false, ack: true },
-      },
-    })
-    .on("broadcast", { event: FIB_EVENT }, ({ payload }) => {
-      setFib(payload.value);
-    })
-    .subscribe();
+  useEffect(() => {
+    const interval = setInterval(() => handleClick(), 3000);
+    return () => clearInterval(interval);
+  });
 
   function handleClick() {
     const s = new Set(FIB);
 
     s.delete(fib);
-    const x = Array.from(s)[Math.floor(Math.random() * s.size)] || 0;
-
-    channel
-      .send({ type: "broadcast", event: FIB_EVENT, payload: { value: x } })
-      .then(() => setFib(x));
+    const x = Array.from(s)[Math.floor(Math.random() * s.size)] || "8";
+    setFib(x);
   }
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-      <Confetti width={width} height={height} gravity={0.05} />
-      <h1 className="text-10xl text-[5rem] font-extrabold tracking-tight text-white sm:text-[8rem]">
+      <Confetti width={width} height={height} gravity={0.05} className="z-0" />
+      <h1 className="text-10xl z-10 text-[5rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
         Estim
-        <span className="text-yellow-400">
-          <button onClick={handleClick}>{fib}</button>
-        </span>
+        <AnimatePresence mode="popLayout">
+          <motion.span
+            className="z-50 inline-block text-center text-yellow-400 sm:min-w-[5rem]"
+            onClick={handleClick}
+            initial={{ y: -75, scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ y: 75, scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            key={fib}
+          >
+            {fib}
+          </motion.span>
+        </AnimatePresence>
         r
       </h1>
-      <div className="flex flex-col items-center gap-2 ">
+      <div className="z-10 flex flex-col items-center gap-2 drop-shadow-xl">
         <RoomForm />
       </div>
     </div>

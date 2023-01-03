@@ -19,7 +19,7 @@ const Auth: NextPage = () => {
     "mb-4 rounded-full bg-white/10 px-4 py-3 font-semibold no-underline hover:bg-white/20";
 
   return (
-    <PopIn className="container mx-auto">
+    <PopIn className="container mx-auto drop-shadow-xl">
       <div className="mt-16 flex flex-col items-center justify-center rounded-full">
         <h1 className="text-4xl font-extrabold text-white sm:text-[5rem]">
           🎉 Welcome 🎉
