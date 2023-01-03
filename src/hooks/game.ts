@@ -127,13 +127,13 @@ export function useEstimationChannel(): Game {
   }, [gameState, estimates, users]);
 
   function submitEstimate(estimate: UserEstimate) {
-    channel
-      ?.send({
-        type: "broadcast",
-        event: ESTIMATE_EVENT,
-        payload: estimate,
-      })
-      .then(() => _addEstimate(estimate, true));
+    channel?.send({
+      type: "broadcast",
+      event: ESTIMATE_EVENT,
+      payload: estimate,
+    });
+
+    _addEstimate(estimate, true);
   }
 
   function emitClear() {
