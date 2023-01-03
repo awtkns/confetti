@@ -6,10 +6,10 @@ import Confetti from "react-confetti";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { AnimatePresence, motion } from "framer-motion";
 
-const FIB = ["1", "8"];
+const FIB = ["1", "2", "3", "5", "8"];
 
 const Home: NextPage = () => {
-  const [fib, setFib] = useState("1");
+  const [fib, setFib] = useState("8");
   const { width, height } = useWindowSize();
 
   useEffect(() => {
