@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import supabase from "../server/supabase";
 import type { User, UserEstimate } from "../types/game";
@@ -22,10 +23,13 @@ const userValidator = z.object({
 
 const presenceValidator = z.array(userValidator);
 
+type Users = Record<string, User>;
+type Estimates = Record<string, UserEstimate>;
+
 interface Game {
   myId: string;
-  onlineUsers: Record<string, User>;
-  estimates: Record<string, UserEstimate>;
+  onlineUsers: Users;
+  estimates: Estimates;
   gameState: GameState;
   confetti: boolean;
   submit: (estimate: UserEstimate) => void;
@@ -39,8 +43,8 @@ export function useEstimationChannel(): Game {
   const [confetti, setConfetti] = useState(false);
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
-  const [users, setUsers] = useState<Record<string, User>>({});
-  const [estimates, setEstimates] = useState<Record<string, UserEstimate>>({});
+  const [users, setUsers] = useState<Users>({});
+  const [estimates, setEstimates] = useState<Estimates>({});
 
   useEffect(() => {
     if (
@@ -63,8 +67,7 @@ export function useEstimationChannel(): Game {
         _addEstimate(payload, false);
       })
       .on("broadcast", { event: CLEAR_EVENT }, function () {
-        setEstimates({});
-        setGameState(GameState.CHOOSING);
+        _clearEstimates();
       })
       .on("broadcast", { event: VIEW_EVENT }, function () {
         setGameState(GameState.VIEWING);
@@ -101,11 +104,7 @@ export function useEstimationChannel(): Game {
   ]);
 
   useEffect(() => {
-    const estimatesCount = Object.keys(estimates).length;
-    const usersCount = Object.keys(users).length;
-
-    if (estimatesCount && estimatesCount >= usersCount)
-      setGameState(GameState.VIEWING);
+    _updateGameState(estimates, users, setGameState);
   }, [estimates, users]);
 
   useEffect(() => {
@@ -127,44 +126,45 @@ export function useEstimationChannel(): Game {
   }, [gameState, estimates, users]);
 
   function submitEstimate(estimate: UserEstimate) {
+    _addEstimate(estimate, true);
     channel?.send({
       type: "broadcast",
       event: ESTIMATE_EVENT,
       payload: estimate,
     });
-
-    _addEstimate(estimate, true);
   }
 
   function emitClear() {
-    channel
-      ?.send({
-        type: "broadcast",
-        event: CLEAR_EVENT,
-      })
-      .then(() => {
-        setEstimates({});
-        setGameState(GameState.CHOOSING);
-      });
+    _clearEstimates();
+    channel?.send({
+      type: "broadcast",
+      event: CLEAR_EVENT,
+    });
   }
 
   function emitContinue() {
-    channel
-      ?.send({
-        type: "broadcast",
-        event: VIEW_EVENT,
-      })
-      .then(() => {
-        setGameState(GameState.VIEWING);
-      });
+    setGameState(GameState.VIEWING);
+    channel?.send({
+      type: "broadcast",
+      event: VIEW_EVENT,
+    });
+  }
+
+  function _clearEstimates() {
+    setEstimates({});
+    setGameState(GameState.CHOOSING);
   }
 
   function _addEstimate(estimate: UserEstimate, self: boolean) {
-    if (self) setGameState(GameState.SUBMITTED);
     setEstimates((prevState) => ({
       ...prevState,
       [estimate.user.id]: estimate,
     }));
+
+    if (self) {
+      _updateGameState(estimates, users, setGameState);
+      if (gameState == GameState.CHOOSING) setGameState(GameState.SUBMITTED);
+    }
   }
 
   return {
@@ -177,4 +177,16 @@ export function useEstimationChannel(): Game {
     emitContinue: emitContinue,
     confetti: confetti,
   };
+}
+
+function _updateGameState(
+  estimates: Estimates,
+  users: Users,
+  setGameState: Dispatch<SetStateAction<GameState>>
+) {
+  const estimatesCount = Object.keys(estimates).length;
+  const usersCount = Object.keys(users).length;
+
+  if (estimatesCount && estimatesCount >= usersCount)
+    setGameState(GameState.VIEWING);
 }
