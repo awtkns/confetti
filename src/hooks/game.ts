@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import supabase from "../server/supabase";
 import type { User, UserEstimate } from "../types/game";
 import { GameState } from "../types/game";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import type { Session } from "next-auth";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
@@ -37,9 +36,10 @@ interface Game {
   emitContinue: () => void;
 }
 
-export function useEstimationChannel(): Game {
-  const { data: sessionData, status } = useSession();
-  const { query, isReady } = useRouter();
+export function useEstimationChannel(
+  channelId: string,
+  session: Session | null
+): Game {
   const [confetti, setConfetti] = useState(false);
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
@@ -47,24 +47,15 @@ export function useEstimationChannel(): Game {
   const [estimates, setEstimates] = useState<Estimates>({});
 
   useEffect(() => {
-    if (
-      !isReady ||
-      status !== "authenticated" ||
-      channel ||
-      typeof query.room !== "string"
-    )
-      return;
-
-    const room = query.room;
     const realtimeChannel = supabase
-      .channel(room, {
+      .channel(channelId, {
         config: {
           broadcast: { self: false, ack: true },
-          presence: { key: room },
+          presence: { key: channelId },
         },
       })
       .on("broadcast", { event: ESTIMATE_EVENT }, ({ payload }) => {
-        _addEstimate(payload, false);
+        _addEstimate(payload, setEstimates);
       })
       .on("broadcast", { event: CLEAR_EVENT }, function () {
         _clearEstimates();
@@ -76,9 +67,9 @@ export function useEstimationChannel(): Game {
     realtimeChannel.on("presence", { event: "sync" }, () => {
       const state = realtimeChannel.presenceState();
 
-      if (state[room] !== undefined) {
+      if (state[channelId] !== undefined) {
         presenceValidator
-          .parseAsync(state[room])
+          .parseAsync(state[channelId])
           .then((r) => setUsers(Object.fromEntries(r.map((e) => [e.id, e]))));
       }
     });
@@ -86,22 +77,18 @@ export function useEstimationChannel(): Game {
     realtimeChannel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
         await realtimeChannel.track({
-          user: sessionData?.user?.name,
-          image: sessionData?.user?.image,
+          user: session?.user?.name,
+          image: session?.user?.image,
           id: userId,
         });
       }
     });
 
     setChannel(realtimeChannel);
-  }, [
-    channel,
-    isReady,
-    query.room,
-    sessionData?.user?.image,
-    sessionData?.user?.name,
-    status,
-  ]);
+    return () => {
+      realtimeChannel.unsubscribe().then();
+    };
+  }, [channelId, session?.user?.image, session?.user?.name]);
 
   useEffect(() => {
     _updateGameState(estimates, users, setGameState);
@@ -126,7 +113,9 @@ export function useEstimationChannel(): Game {
   }, [gameState, estimates, users]);
 
   function submitEstimate(estimate: UserEstimate) {
-    _addEstimate(estimate, true);
+    _addEstimate(estimate, setEstimates);
+    _updateGameState(estimates, users, setGameState);
+    if (gameState == GameState.CHOOSING) setGameState(GameState.SUBMITTED);
     channel?.send({
       type: "broadcast",
       event: ESTIMATE_EVENT,
@@ -155,18 +144,6 @@ export function useEstimationChannel(): Game {
     setGameState(GameState.CHOOSING);
   }
 
-  function _addEstimate(estimate: UserEstimate, self: boolean) {
-    setEstimates((prevState) => ({
-      ...prevState,
-      [estimate.user.id]: estimate,
-    }));
-
-    if (self) {
-      _updateGameState(estimates, users, setGameState);
-      if (gameState == GameState.CHOOSING) setGameState(GameState.SUBMITTED);
-    }
-  }
-
   return {
     myId: userId,
     onlineUsers: users,
@@ -177,6 +154,16 @@ export function useEstimationChannel(): Game {
     emitContinue: emitContinue,
     confetti: confetti,
   };
+}
+
+function _addEstimate(
+  estimate: UserEstimate,
+  setEstimates: Dispatch<SetStateAction<Estimates>>
+) {
+  setEstimates((prevState) => ({
+    ...prevState,
+    [estimate.user.id]: estimate,
+  }));
 }
 
 function _updateGameState(

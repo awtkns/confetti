@@ -3,7 +3,6 @@ import type {
   GetServerSidePropsContext,
   NextPage,
 } from "next";
-import { useRouter } from "next/router";
 
 import { useSession } from "next-auth/react";
 import ResultsTable from "../components/ResultsTable";
@@ -22,9 +21,8 @@ import Toast from "../ui/toast";
 import Button from "../ui/button";
 import { FaShare } from "react-icons/fa";
 
-const Room: NextPage<{ host: string }> = ({ host }) => {
-  const { data: sessionData } = useSession();
-  const router = useRouter();
+const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
+  const { data: session } = useSession();
   const {
     onlineUsers,
     estimates,
@@ -34,7 +32,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
     emitContinue,
     confetti,
     myId,
-  } = useEstimationChannel();
+  } = useEstimationChannel(room, session);
   const [waitingForUsers, setWaitingForUsers] = useState<Map<string, User>>(
     new Map()
   );
@@ -42,7 +40,6 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
   const [isLoading, setLoading] = useState(true);
   const [showCopied, setShowCopied] = useState(false);
   const { width, height } = useWindowSize();
-  const room = router.query.room;
 
   useEffect(() => {
     setTimeout(() => {
@@ -58,11 +55,16 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
   }, [onlineUsers, estimates]);
 
   const choosing = gameState == GameState.CHOOSING && (
-    <EstimateGrid session={sessionData} submit={submit} myId={myId} />
+    <EstimateGrid
+      session={session}
+      submit={submit}
+      myId={myId}
+      key="choosing"
+    />
   );
 
   const waiting = gameState == GameState.SUBMITTED && (
-    <PopIn className="flex flex-col items-center">
+    <PopIn className="flex flex-col items-center" key="waiting">
       <table className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white">
         <thead>
           <tr>
@@ -87,7 +89,7 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
     </PopIn>
   );
   const viewing = gameState == GameState.VIEWING && (
-    <PopIn className="flex flex-col items-center">
+    <PopIn className="flex flex-col items-center" key="viewing">
       <ResultsTable
         estimates={estimates}
         onlineUsers={onlineUsers}
@@ -114,11 +116,11 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
         model={[isToastOpen, setToastOpen]}
         onAction={() => {
           window.navigator.clipboard
-            .writeText(host + router.asPath)
+            .writeText(encodeURI(host + "/" + room))
             .then(() => setShowCopied(true));
         }}
         title="Invite link available! 🎉"
-        description={host + router.asPath}
+        description={encodeURI(host + "/" + room)}
       />
       <Toast
         model={[showCopied, setShowCopied]}
@@ -136,8 +138,10 @@ const Room: NextPage<{ host: string }> = ({ host }) => {
       <p className="text-center text-2xl text-white">
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {choosing || waiting || viewing}
+      </AnimatePresence>
+      <AnimatePresence>
         {isLoading || isToastOpen || showCopied || (
           <PopIn className="absolute bottom-4 mx-auto flex">
             <Button
@@ -168,7 +172,7 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   return {
-    props: { session, host: ctx.req.headers.host || "" },
+    props: { session, host: ctx.req.headers.host || "", room: ctx.query.room },
   };
 };
 

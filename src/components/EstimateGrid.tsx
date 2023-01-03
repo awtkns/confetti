@@ -2,7 +2,7 @@ import type { User, UserEstimate } from "../types/game";
 import type { Session } from "next-auth";
 import PopIn from "../ui/popin";
 
-const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", " "];
+const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
 
 const EstimateGrid: React.FC<{
   session: Session | null;
@@ -33,7 +33,7 @@ const EstimateGrid: React.FC<{
   return (
     <PopIn className="m-4 grid grid-cols-3 gap-4">
       {FIB.map((value, key) =>
-        value.trim() === "" ? hidden(key) : button(key, value)
+        value === "" ? hidden(key) : button(key, value)
       )}
     </PopIn>
   );
