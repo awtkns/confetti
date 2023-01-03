@@ -19,7 +19,7 @@ const OnlineUsers: React.FC<{
             exit={{ x: -50 }}
             alt="User profile image"
             referrerPolicy="no-referrer"
-            className={`m-1 h-8 rounded-full drop-shadow-2xl ${
+            className={`m-1 h-8 rounded-full shadow-lg ${
               user.id === myId ? "ring-2 ring-pink-500 " : ""
             }`}
           />

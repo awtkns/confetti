@@ -6,8 +6,6 @@ import type {
 import { useRouter } from "next/router";
 
 import { useSession } from "next-auth/react";
-
-import Link from "next/link";
 import ResultsTable from "../components/ResultsTable";
 import type { User } from "../types/game";
 import { GameState } from "../types/game";
@@ -20,10 +18,11 @@ import { AnimatePresence } from "framer-motion";
 import EstimateGrid from "../components/EstimateGrid";
 import PopIn from "../ui/popin";
 import OnlineUsers from "../components/OnlineUsers";
+import Toast from "../ui/toast";
 
-const Room: NextPage = () => {
+const Room: NextPage<{ host: string }> = ({ host }) => {
   const { data: sessionData } = useSession();
-  const { query } = useRouter();
+  const router = useRouter();
   const {
     onlineUsers,
     estimates,
@@ -37,8 +36,17 @@ const Room: NextPage = () => {
   const [waitingForUsers, setWaitingForUsers] = useState<Map<string, User>>(
     new Map()
   );
+  const [isToastOpen, setToastOpen] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const { width, height } = useWindowSize();
-  const room = query.room;
+  const room = router.query.room;
+
+  useEffect(() => {
+    setTimeout(() => {
+      setToastOpen(true);
+      setLoading(false);
+    }, 750);
+  }, []);
 
   useEffect(() => {
     const s = new Map(Object.entries(onlineUsers));
@@ -99,11 +107,28 @@ const Room: NextPage = () => {
         className={confetti ? "" : "invisible"}
         suppressHydrationWarning
       />
-      <Link href={"/"} className="absolute bottom-4 mx-auto">
-        <button className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500">
-          Home
-        </button>
-      </Link>
+      <Toast
+        model={[isToastOpen, setToastOpen]}
+        onAction={() => {
+          window.navigator.clipboard.writeText(host + router.asPath).then();
+        }}
+        title="Invite link available! 🎉"
+        description={host + router.asPath}
+      />
+      <div className="absolute bottom-4 mx-auto flex">
+        <AnimatePresence>
+          {isLoading || isToastOpen || (
+            <PopIn>
+              <button
+                className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
+                onClick={() => setToastOpen(true)}
+              >
+                Invite
+              </button>
+            </PopIn>
+          )}
+        </AnimatePresence>
+      </div>
       <OnlineUsers
         users={onlineUsers}
         myId={myId}
@@ -134,7 +159,7 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   return {
-    props: { session },
+    props: { session, host: ctx.req.headers.host || "" },
   };
 };
 
