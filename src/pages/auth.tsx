@@ -9,6 +9,7 @@ import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 import Input from "../ui/input";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import PopIn from "../ui/popin";
 
 const Auth: NextPage = () => {
   const auth = useAuth();
@@ -18,10 +19,12 @@ const Auth: NextPage = () => {
     "mb-4 rounded-full bg-white/10 px-4 py-3 font-semibold no-underline hover:bg-white/20";
 
   return (
-    <div className="container mx-auto">
+    <PopIn className="container mx-auto">
       <div className="mt-16 flex flex-col items-center justify-center rounded-full">
-        <h1 className="mb-8 text-4xl font-bold text-white">🎉 Welcome 🎉</h1>
-        <p className="text-md mb-8 font-bold text-white">
+        <h1 className="text-4xl font-extrabold text-white sm:text-[5rem]">
+          🎉 Welcome 🎉
+        </h1>
+        <p className="m-8 text-lg font-bold text-white">
           Choose a display name or sign in
         </p>
         <div className="flex items-center">
@@ -54,7 +57,7 @@ const Auth: NextPage = () => {
           Sign in with Google
         </Button>
       </div>
-    </div>
+    </PopIn>
   );
 };
 
