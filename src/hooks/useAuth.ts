@@ -27,7 +27,7 @@ export function useAuth(): Auth {
       .uuid()
       .parseAsync(user.email)
       .then((uuid) => window.localStorage.setItem(UUID_KEY, uuid))
-      .catch();
+      .catch(() => undefined);
   }, [session, status]);
 
   const handleSignIn = async (provider: Provider, name?: string) => {

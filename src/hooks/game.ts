@@ -49,7 +49,8 @@ export function useEstimationChannel(
   const [estimates, setEstimates] = useState<Estimates>({});
 
   useEffect(() => {
-    if (channel.current) return unsubscribeCallback(channel.current);
+    if (channel.current || !session?.user)
+      return unsubscribeCallback(channel.current);
 
     channel.current = subscribe(channelId);
     channel.current
@@ -80,7 +81,7 @@ export function useEstimationChannel(
           });
         }
       });
-  }, [channelId, session?.user?.image, session?.user?.name]);
+  }, [channelId, session?.user]);
 
   useEffect(() => {
     _updateGameState(estimates, users, setGameState);
