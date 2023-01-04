@@ -6,20 +6,29 @@ import { FaArrowRight } from "react-icons/fa";
 import { z } from "zod";
 
 import Input from "../ui/input";
+import Loader from "../ui/loader";
 
 const roomValidator = z.string().min(1);
 
 const RoomForm: React.FC = () => {
-  const router = useRouter();
   const { status } = useSession();
 
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const room = useState("");
   const error = useState(false);
 
   const joinRoom = () => {
-    let url = roomValidator.parse(room[0]);
-    if (status == "unauthenticated") url = "auth?room=" + url;
-    router.push(url).then();
+    setLoading(true);
+
+    try {
+      let url = roomValidator.parse(room[0]);
+      if (status == "unauthenticated") url = "auth?room=" + url;
+      router.push(url).then();
+    } catch (e) {
+      setLoading(false);
+      error[1](true);
+    }
   };
 
   return (
@@ -44,14 +53,10 @@ const RoomForm: React.FC = () => {
         className="ml-2 rounded-full bg-white/10 p-2 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
         onClick={(e) => {
           e.preventDefault();
-          try {
-            joinRoom();
-          } catch (e) {
-            error[1](true);
-          }
+          joinRoom();
         }}
       >
-        <FaArrowRight className="h-4 text-inherit " />
+        {loading ? <Loader /> : <FaArrowRight className="h-4 text-inherit " />}
       </motion.button>
     </motion.div>
   );

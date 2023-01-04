@@ -1,41 +1,53 @@
 import type { ForwardedRef } from "react";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
+
+import Loader from "./loader";
 
 export interface ButtonProps {
   type?: "button" | "submit" | "reset";
-  disabled?: boolean;
   className?: string;
-  isLoading?: boolean;
-  loadingText?: string;
   icon?: React.ReactNode;
   children?: React.ReactNode;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  loader?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void> | void;
 }
 
 const Button = forwardRef(
-  (props: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => (
-    <button
-      ref={ref}
-      type={props.type}
-      disabled={props.disabled || props.isLoading}
-      onClick={props.onClick}
-      className={
-        "text-white transition hover:text-yellow-500 " + props.className
+  (props: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => {
+    const [loading, setLoading] = useState(false);
+    const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (props.loader == true) setLoading(true);
+
+      try {
+        Promise.resolve(props.onClick?.(e)).then();
+      } catch (e) {
+        setLoading(false);
       }
-    >
-      {props.isLoading ? (
-        <>
-          {/*<Loader className="mr-2" />*/}
-          {props.loadingText ? props.loadingText : "Loading..."}
-        </>
-      ) : (
+    };
+
+    return (
+      <button
+        ref={ref}
+        type={props.type}
+        disabled={loading}
+        onClick={onClick}
+        className={
+          "text-white transition hover:text-yellow-500 " + props.className
+        }
+      >
         <div className="flex items-center">
-          {props.icon ? <div className="mr-2">{props.icon}</div> : null}
-          {props.children}
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              {props.icon ? <div className="mr-2">{props.icon}</div> : null}
+              {props.children}
+            </>
+          )}
         </div>
-      )}
-    </button>
-  )
+      </button>
+    );
+  }
 );
 
 Button.displayName = "Button";

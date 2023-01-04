@@ -80,15 +80,10 @@ export function useEstimationChannel(
           });
         }
       });
-
-    return unsubscribeCallback(channel.current);
   }, [channelId, session?.user?.image, session?.user?.name]);
 
   useEffect(() => {
     _updateGameState(estimates, users, setGameState);
-  }, [estimates, users]);
-
-  useEffect(() => {
     const estimatesCount = Object.keys(estimates).length;
     const usersCount = Object.keys(users).length;
 

@@ -5,6 +5,7 @@ import { FaGithub, FaHashtag, FaHome, FaLink, FaUser } from "react-icons/fa";
 
 import { useAuth } from "../hooks/useAuth";
 import { Dropdown, DropdownItem } from "../ui/dropdown";
+import Loader from "../ui/loader";
 
 const Header: React.FC = () => {
   const { signOut, session, status } = useAuth();
@@ -14,6 +15,7 @@ const Header: React.FC = () => {
     <Dropdown
       title={session?.user?.name || ""}
       icon={<FaHashtag className="h-4 text-inherit" />}
+      loader={false}
     >
       {status === "authenticated" && (
         <DropdownItem
@@ -24,25 +26,32 @@ const Header: React.FC = () => {
         </DropdownItem>
       )}
 
-      <DropdownItem icon={<FaHome className="h-4 text-inherit" />}>
-        <Link href="/">Home</Link>
-      </DropdownItem>
       {router.route != "/" && (
-        <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
-          <a
-            href="https://github.com/awtkns/estimator/issues/new"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Report a bug
-          </a>
+        <DropdownItem icon={<FaHome className="h-4 text-inherit" />}>
+          <Link href="/">Home</Link>
         </DropdownItem>
       )}
+
+      <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
+        <a
+          href="https://github.com/awtkns/estimator/issues/new"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Report a bug
+        </a>
+      </DropdownItem>
     </Dropdown>
   );
 
-  const unauthenticated = status == "unauthenticated" &&
-    router.route != "/auth" && <Link href="/auth">Sign In</Link>;
+  const loading = status == "loading" && <Loader />;
+
+  const unauthenticated =
+    status == "unauthenticated" && router.route != "/auth" ? (
+      <Link href="/auth">Sign In</Link>
+    ) : (
+      <Link href="/">Home</Link>
+    );
 
   const github = (
     <a
@@ -65,7 +74,7 @@ const Header: React.FC = () => {
               transition={{ duration: 1, type: "spring" }}
               className="ml-auto pr-4 text-lg text-white hover:text-yellow-500"
             >
-              {authenticated || unauthenticated}
+              {authenticated || loading || unauthenticated}
             </motion.div>
           </AnimatePresence>
           {github}

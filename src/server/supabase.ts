@@ -25,5 +25,5 @@ export const subscribe = (channelId: string): RealtimeChannel =>
 
 export const unsubscribeCallback =
   (channel: RealtimeChannel | undefined) => () => {
-    channel?.unsubscribe().then();
+    channel?.unsubscribe();
   };
