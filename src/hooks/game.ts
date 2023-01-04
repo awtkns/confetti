@@ -1,16 +1,18 @@
-import type { Dispatch, SetStateAction } from "react";
-import { useEffect, useState } from "react";
-import supabase from "../server/supabase";
-import type { User, UserEstimate } from "../types/game";
-import { GameState } from "../types/game";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
-import { z } from "zod";
 import type { Session } from "next-auth";
+import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+
+import { subscribe, unsubscribeCallback } from "../server/supabase";
+import type { User, UserEstimate } from "../types/game";
+import { GameState } from "../types/game";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
 const VIEW_EVENT = "view";
+const SYNC_EVENT = "sync";
 
 const userId = nanoid();
 
@@ -40,20 +42,17 @@ export function useEstimationChannel(
   channelId: string,
   session: Session | null
 ): Game {
+  const channel = useRef<RealtimeChannel>();
   const [confetti, setConfetti] = useState(false);
-  const [channel, setChannel] = useState<RealtimeChannel>();
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
   const [users, setUsers] = useState<Users>({});
   const [estimates, setEstimates] = useState<Estimates>({});
 
   useEffect(() => {
-    const realtimeChannel = supabase
-      .channel(channelId, {
-        config: {
-          broadcast: { self: false, ack: true },
-          presence: { key: channelId },
-        },
-      })
+    if (channel.current) return unsubscribeCallback(channel.current);
+
+    channel.current = subscribe(channelId);
+    channel.current
       .on("broadcast", { event: ESTIMATE_EVENT }, ({ payload }) => {
         _addEstimate(payload, setEstimates);
       })
@@ -62,32 +61,27 @@ export function useEstimationChannel(
       })
       .on("broadcast", { event: VIEW_EVENT }, function () {
         setGameState(GameState.VIEWING);
+      })
+      .on("presence", { event: SYNC_EVENT }, () => {
+        const state = channel.current?.presenceState();
+
+        if (state && state[channelId] !== undefined) {
+          presenceValidator
+            .parseAsync(state[channelId])
+            .then((r) => setUsers(Object.fromEntries(r.map((e) => [e.id, e]))));
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await channel.current?.track({
+            user: session?.user?.name,
+            image: session?.user?.image,
+            id: userId,
+          });
+        }
       });
 
-    realtimeChannel.on("presence", { event: "sync" }, () => {
-      const state = realtimeChannel.presenceState();
-
-      if (state[channelId] !== undefined) {
-        presenceValidator
-          .parseAsync(state[channelId])
-          .then((r) => setUsers(Object.fromEntries(r.map((e) => [e.id, e]))));
-      }
-    });
-
-    realtimeChannel.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        await realtimeChannel.track({
-          user: session?.user?.name,
-          image: session?.user?.image,
-          id: userId,
-        });
-      }
-    });
-
-    setChannel(realtimeChannel);
-    return () => {
-      realtimeChannel.unsubscribe().then();
-    };
+    return unsubscribeCallback(channel.current);
   }, [channelId, session?.user?.image, session?.user?.name]);
 
   useEffect(() => {
@@ -116,7 +110,7 @@ export function useEstimationChannel(
     _addEstimate(estimate, setEstimates);
     _updateGameState(estimates, users, setGameState);
     if (gameState == GameState.CHOOSING) setGameState(GameState.SUBMITTED);
-    channel?.send({
+    channel.current?.send({
       type: "broadcast",
       event: ESTIMATE_EVENT,
       payload: estimate,
@@ -125,7 +119,7 @@ export function useEstimationChannel(
 
   function emitClear() {
     _clearEstimates();
-    channel?.send({
+    channel.current?.send({
       type: "broadcast",
       event: CLEAR_EVENT,
     });
@@ -133,7 +127,7 @@ export function useEstimationChannel(
 
   function emitContinue() {
     setGameState(GameState.VIEWING);
-    channel?.send({
+    channel.current?.send({
       type: "broadcast",
       event: VIEW_EVENT,
     });
