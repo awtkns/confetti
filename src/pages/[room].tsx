@@ -1,25 +1,25 @@
+import { AnimatePresence } from "framer-motion";
 import type {
   GetServerSideProps,
   GetServerSidePropsContext,
   NextPage,
 } from "next";
-
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import Confetti from "react-confetti";
+import { FaShare } from "react-icons/fa";
+
+import EstimateGrid from "../components/EstimateGrid";
+import OnlineUsers from "../components/OnlineUsers";
 import ResultsTable from "../components/ResultsTable";
+import { useEstimationChannel } from "../hooks/game";
+import { useWindowSize } from "../hooks/useWindowSize";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import type { User } from "../types/game";
 import { GameState } from "../types/game";
-import { useEstimationChannel } from "../hooks/game";
-import { useEffect, useState } from "react";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import Confetti from "react-confetti";
-import { useWindowSize } from "../hooks/useWindowSize";
-import { AnimatePresence } from "framer-motion";
-import EstimateGrid from "../components/EstimateGrid";
-import PopIn from "../ui/popin";
-import OnlineUsers from "../components/OnlineUsers";
-import Toast from "../ui/toast";
 import Button from "../ui/button";
-import { FaShare } from "react-icons/fa";
+import PopIn from "../ui/popin";
+import Toast from "../ui/toast";
 
 const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
   const { data: session } = useSession();

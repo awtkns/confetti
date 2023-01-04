@@ -1,18 +1,18 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { getCookie, setCookie } from "cookies-next";
+import { randomUUID } from "crypto";
+import type { NextApiRequest, NextApiResponse } from "next";
 import type { AuthOptions } from "next-auth";
 import NextAuth, { type NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import GithubProvider from "next-auth/providers/github";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { decode, encode } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import { z } from "zod";
 
 import { env } from "../../../env/server.mjs";
-import { prisma } from "../../../server/db/client";
-import { getCookie, setCookie } from "cookies-next";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { decode, encode } from "next-auth/jwt";
-import { randomUUID } from "crypto";
-import { z } from "zod";
 import { imageUrl } from "../../../server/common/images";
+import { prisma } from "../../../server/db/client";
 
 const adapter = PrismaAdapter(prisma);
 

@@ -1,7 +1,8 @@
-import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import Button from "./button";
+import { Fragment } from "react";
+
 import type { ButtonProps } from "./button";
+import Button from "./button";
 
 interface DropdownProps extends ButtonProps {
   title?: string | undefined;

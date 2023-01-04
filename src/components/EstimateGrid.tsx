@@ -1,5 +1,6 @@
-import type { User, UserEstimate } from "../types/game";
 import type { Session } from "next-auth";
+
+import type { User, UserEstimate } from "../types/game";
 import PopIn from "../ui/popin";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];

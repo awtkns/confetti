@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+
 import type { User } from "../types/game";
 
 const OnlineUsers: React.FC<{

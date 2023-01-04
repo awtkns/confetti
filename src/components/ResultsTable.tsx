@@ -1,5 +1,6 @@
-import type { User, UserEstimate } from "../types/game";
 import { useEffect, useState } from "react";
+
+import type { User, UserEstimate } from "../types/game";
 
 const ResultsTable: React.FC<{
   estimates: Record<string, UserEstimate>;

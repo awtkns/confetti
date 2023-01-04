@@ -1,10 +1,10 @@
-import { Dropdown, DropdownItem } from "../ui/dropdown";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AnimatePresence, motion } from "framer-motion";
-
 import { FaGithub, FaHashtag, FaHome, FaLink, FaUser } from "react-icons/fa";
+
 import { useAuth } from "../hooks/useAuth";
+import { Dropdown, DropdownItem } from "../ui/dropdown";
 
 const Header: React.FC = () => {
   const { signOut, session, status } = useAuth();

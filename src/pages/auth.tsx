@@ -3,12 +3,13 @@ import type {
   GetServerSidePropsContext,
   NextPage,
 } from "next";
+import { useState } from "react";
+import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
+
+import { useAuth } from "../hooks/useAuth";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import Button from "../ui/button";
-import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 import Input from "../ui/input";
-import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 import PopIn from "../ui/popin";
 
 const Auth: NextPage = () => {
@@ -17,6 +18,8 @@ const Auth: NextPage = () => {
 
   const buttonStyle =
     "mb-4 rounded-full bg-white/10 px-4 py-3 font-semibold no-underline hover:bg-white/20";
+
+  const signIn = () => auth.signIn("anonymous", displayNameState[0]);
 
   return (
     <PopIn className="container mx-auto drop-shadow-xl">
@@ -33,10 +36,11 @@ const Auth: NextPage = () => {
             className="py-2"
             placeholder="Display Name"
             model={displayNameState}
-          ></Input>
+            enterPressed={signIn}
+          />
           <button
             className="ml-2 rounded-full bg-white/10 p-2 font-semibold text-white no-underline transition hover:bg-white/20 hover:text-yellow-500"
-            onClick={() => auth.signIn("anonymous", displayNameState[0])}
+            onClick={signIn}
           >
             <FaArrowRight className="h-auto text-inherit " />
           </button>

@@ -1,10 +1,9 @@
 import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
-
-import { trpc } from "../utils/trpc";
 import { useState } from "react";
+
 import RoomForm from "../components/RoomForm";
-import Test from "../components/Test";
+import { trpc } from "../utils/trpc";
 
 const FIB = [1, 2, 3, 5, 8, 13];
 
@@ -33,7 +32,6 @@ const Home: NextPage = () => {
         <p className="text-2xl text-white">
           {hello.data ? hello.data.greeting : "Loading tRPC query..."}
         </p>
-        <Test />
         <RoomForm />
         {/*<Login isOpen={showLogin} onClose={() => setShowLogin(false)}></Login>*/}
         <AuthShowcase />

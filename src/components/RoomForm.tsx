@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
-import { FaArrowRight } from "react-icons/fa";
-import { useSession } from "next-auth/react";
-import { z } from "zod";
-import Input from "../ui/input";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { FaArrowRight } from "react-icons/fa";
+import { z } from "zod";
+
+import Input from "../ui/input";
 
 const roomValidator = z.string().min(1);
 

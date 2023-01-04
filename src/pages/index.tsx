@@ -1,10 +1,10 @@
-import type { NextPage } from "next";
-
-import { useEffect, useState } from "react";
-import RoomForm from "../components/RoomForm";
-import Confetti from "react-confetti";
-import { useWindowSize } from "../hooks/useWindowSize";
 import { AnimatePresence, motion } from "framer-motion";
+import type { NextPage } from "next";
+import { useEffect, useState } from "react";
+import Confetti from "react-confetti";
+
+import RoomForm from "../components/RoomForm";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const FIB = ["1", "2", "3", "5", "8"];
 
