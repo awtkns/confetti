@@ -33,7 +33,7 @@ export const serverSchema = z.object({
 export const clientSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-  NEXT_PUBLIC_VERCEL_URL: z.string().url()
+  NEXT_PUBLIC_VERCEL_URL: z.string().optional()
 });
 
 /**
