@@ -57,7 +57,6 @@ export function useEstimationChannel(): Game {
     if (!router.isReady || !session?.user?.name || status != "authenticated")
       return;
 
-    console.log("set channel");
     const channelId =
       router.query.room == "string"
         ? router.query.room

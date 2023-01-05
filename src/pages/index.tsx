@@ -1,16 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import Confetti from "react-confetti";
 
+import DynamicConfetti from "../components/DynamicConfetti";
 import RoomForm from "../components/RoomForm";
-import { useWindowSize } from "../hooks/useWindowSize";
 
 const FIB = ["1", "2", "3", "5", "8"];
 
 const Home: NextPage = () => {
   const [fib, setFib] = useState("8");
-  const { width, height } = useWindowSize();
 
   useEffect(() => {
     const interval = setInterval(() => handleClick(), 3000);
@@ -27,7 +25,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-      <Confetti width={width} height={height} gravity={0.05} className="z-0" />
+      <DynamicConfetti show={true} />
       <h1 className="text-10xl z-10 text-[5rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
         Estim
         <AnimatePresence mode="popLayout">

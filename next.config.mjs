@@ -13,6 +13,11 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  compiler: {
+    removeConsole: {
+      exclude: ['error'],
+    },
+  },
   async rewrites() {
     return [
       {

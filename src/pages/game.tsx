@@ -2,14 +2,14 @@ import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Confetti from "react-confetti";
 import { FaShare } from "react-icons/fa";
 
+import DynamicConfetti from "../components/DynamicConfetti";
 import EstimateGrid from "../components/EstimateGrid";
 import OnlineUsers from "../components/OnlineUsers";
 import ResultsTable from "../components/ResultsTable";
+import { env } from "../env/client.mjs";
 import { useEstimationChannel } from "../hooks/game";
-import { useWindowSize } from "../hooks/useWindowSize";
 import type { User } from "../types/game";
 import { GameState } from "../types/game";
 import Button from "../ui/button";
@@ -35,7 +35,6 @@ const Game: NextPage = () => {
   const [isToastOpen, setToastOpen] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [showCopied, setShowCopied] = useState(false);
-  const { width, height } = useWindowSize();
 
   useEffect(() => {
     setTimeout(() => {
@@ -60,7 +59,7 @@ const Game: NextPage = () => {
   );
 
   const waiting = gameState == GameState.SUBMITTED && (
-    <PopIn className="flex flex-col items-center" key="waiting">
+    <PopIn className="flex flex-col items-center z-10" key="waiting">
       <table className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white">
         <thead>
           <tr>
@@ -85,7 +84,7 @@ const Game: NextPage = () => {
     </PopIn>
   );
   const viewing = gameState == GameState.VIEWING && (
-    <PopIn className="flex flex-col items-center" key="viewing">
+    <PopIn className="flex flex-col items-center z-10" key="viewing">
       <ResultsTable
         estimates={estimates}
         onlineUsers={onlineUsers}
@@ -101,22 +100,16 @@ const Game: NextPage = () => {
   );
   return (
     <>
-      <Confetti
-        width={width}
-        height={height}
-        recycle={confetti}
-        className={confetti ? "" : "invisible"}
-        suppressHydrationWarning
-      />
+      <DynamicConfetti show={confetti} />
       <Toast
         model={[isToastOpen, setToastOpen]}
         onAction={() => {
-          // window.navigator.clipboard
-          //   .writeText(encodeURI(host + "/" + room))
-          //   .then(() => setShowCopied(true));
+          window.navigator.clipboard
+            .writeText(roomUri(room))
+            .then(() => setShowCopied(true));
         }}
         title="Invite link available! 🎉"
-        // description={encodeURI(host + "/" + room)}
+        description={roomUri(room)}
       />
       <Toast
         model={[showCopied, setShowCopied]}
@@ -126,12 +119,12 @@ const Game: NextPage = () => {
       <OnlineUsers
         users={onlineUsers}
         myId={myId}
-        className="absolute left-2 top-2"
+        className="absolute left-2 top-2 z-10"
       />
-      <h1 className=" mt-16 py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem]">
+      <h1 className=" mt-16 py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem] z-10">
         Estimating
       </h1>
-      <p className="text-center text-2xl text-white">
+      <p className="text-center text-2xl text-white z-10">
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
       <AnimatePresence mode="wait">
@@ -139,7 +132,7 @@ const Game: NextPage = () => {
       </AnimatePresence>
       <AnimatePresence>
         {isLoading || isToastOpen || showCopied || (
-          <PopIn className="absolute bottom-4 mx-auto flex">
+          <PopIn className="absolute bottom-4 mx-auto flex z-10">
             <Button
               icon={<FaShare />}
               className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500"
@@ -152,6 +145,10 @@ const Game: NextPage = () => {
       </AnimatePresence>
     </>
   );
+};
+
+const roomUri = (room: string | undefined) => {
+  return encodeURI(env.NEXT_PUBLIC_VERCEL_URL + "/" + room);
 };
 
 export default Game;
