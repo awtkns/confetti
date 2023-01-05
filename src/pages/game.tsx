@@ -1,18 +1,19 @@
+import EstimateGrid from "@/components/EstimateGrid";
+import OnlineUsers from "@/components/OnlineUsers";
+import ResultsTable from "@/components/ResultsTable";
+import { useEstimationChannel } from "@/hooks/useGameChannel";
+import type { User } from "@/types/game";
+import DynamicConfetti from "components/DynamicConfetti";
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { FaShare } from "react-icons/fa";
 
-import DynamicConfetti from "../components/DynamicConfetti";
-import EstimateGrid from "../components/EstimateGrid";
-import OnlineUsers from "../components/OnlineUsers";
-import ResultsTable from "../components/ResultsTable";
+import Button from "@/ui/button";
+import PopIn from "@/ui/popin";
+import Toast from "@/ui/toast";
+
 import { env } from "../env/client.mjs";
-import { useEstimationChannel } from "../hooks/useGameChannel";
-import type { User } from "../types/game";
-import Button from "../ui/button";
-import PopIn from "../ui/popin";
-import Toast from "../ui/toast";
 
 const Game: NextPage = () => {
   const {

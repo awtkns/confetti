@@ -1,3 +1,11 @@
+import { useAuthedOnly } from "@/hooks/useAuthedOnly";
+import type {
+  Estimates,
+  GameState,
+  UseGameChannelProps,
+  UserEstimate,
+  Users,
+} from "@/types/game";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
@@ -7,15 +15,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
-import { subscribe, unsubscribeCallback } from "../server/supabase";
-import type {
-  Estimates,
-  GameState,
-  UseGameChannelProps,
-  UserEstimate,
-  Users,
-} from "../types/game";
-import { useAuthedOnly } from "./useAuthedOnly";
+import { subscribe, unsubscribeCallback } from "@/server/supabase";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";

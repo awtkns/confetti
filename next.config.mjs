@@ -16,10 +16,10 @@ const config = {
   async rewrites() {
     return [
       {
-        source: '/:path',
-        destination: '/game?room=:path',
+        source: "/:path",
+        destination: "/game?room=:path",
       },
-    ]
-  }
+    ];
+  },
 };
 export default config;
