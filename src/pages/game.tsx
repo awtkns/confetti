@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaShare } from "react-icons/fa";
 
@@ -9,15 +8,13 @@ import EstimateGrid from "../components/EstimateGrid";
 import OnlineUsers from "../components/OnlineUsers";
 import ResultsTable from "../components/ResultsTable";
 import { env } from "../env/client.mjs";
-import { useEstimationChannel } from "../hooks/game";
+import { useEstimationChannel } from "../hooks/useGameChannel";
 import type { User } from "../types/game";
-import { GameState } from "../types/game";
 import Button from "../ui/button";
 import PopIn from "../ui/popin";
 import Toast from "../ui/toast";
 
 const Game: NextPage = () => {
-  const { data: session } = useSession();
   const {
     onlineUsers,
     estimates,
@@ -49,16 +46,11 @@ const Game: NextPage = () => {
     setWaitingForUsers(s);
   }, [onlineUsers, estimates]);
 
-  const choosing = gameState == GameState.CHOOSING && (
-    <EstimateGrid
-      session={session}
-      submit={submit}
-      myId={myId}
-      key="choosing"
-    />
+  const choosing = gameState == "choosing" && (
+    <EstimateGrid submit={submit} key="choosing" />
   );
 
-  const waiting = gameState == GameState.SUBMITTED && (
+  const waiting = gameState == "submitted" && (
     <PopIn className="flex flex-col items-center z-10" key="waiting">
       <table className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white">
         <thead>
@@ -83,7 +75,7 @@ const Game: NextPage = () => {
       </button>
     </PopIn>
   );
-  const viewing = gameState == GameState.VIEWING && (
+  const viewing = gameState == "viewing" && (
     <PopIn className="flex flex-col items-center z-10" key="viewing">
       <ResultsTable
         estimates={estimates}
