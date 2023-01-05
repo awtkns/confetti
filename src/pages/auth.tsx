@@ -1,13 +1,8 @@
-import type {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  NextPage,
-} from "next";
+import type { NextPage } from "next";
 import { useState } from "react";
 import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 
 import { useAuth } from "../hooks/useAuth";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import Button from "../ui/button";
 import Input from "../ui/input";
 import PopIn from "../ui/popin";
@@ -73,25 +68,6 @@ const Auth: NextPage = () => {
       </div>
     </PopIn>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
-  const session = await getServerAuthSession(ctx);
-
-  if (session) {
-    return {
-      redirect: {
-        destination: `/${ctx.query.room || ""}`,
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session },
-  };
 };
 
 export default Auth;

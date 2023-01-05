@@ -13,5 +13,13 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  async rewrites() {
+    return [
+      {
+        source: '/:path',
+        destination: '/game?room=:path',
+      },
+    ]
+  }
 };
 export default config;

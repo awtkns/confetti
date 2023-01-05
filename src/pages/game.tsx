@@ -1,9 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import type {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  NextPage,
-} from "next";
+import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
@@ -14,14 +10,13 @@ import OnlineUsers from "../components/OnlineUsers";
 import ResultsTable from "../components/ResultsTable";
 import { useEstimationChannel } from "../hooks/game";
 import { useWindowSize } from "../hooks/useWindowSize";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
 import type { User } from "../types/game";
 import { GameState } from "../types/game";
 import Button from "../ui/button";
 import PopIn from "../ui/popin";
 import Toast from "../ui/toast";
 
-const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
+const Game: NextPage = () => {
   const { data: session } = useSession();
   const {
     onlineUsers,
@@ -32,7 +27,8 @@ const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
     emitContinue,
     confetti,
     myId,
-  } = useEstimationChannel(room, session);
+    room,
+  } = useEstimationChannel();
   const [waitingForUsers, setWaitingForUsers] = useState<Map<string, User>>(
     new Map()
   );
@@ -115,12 +111,12 @@ const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
       <Toast
         model={[isToastOpen, setToastOpen]}
         onAction={() => {
-          window.navigator.clipboard
-            .writeText(encodeURI(host + "/" + room))
-            .then(() => setShowCopied(true));
+          // window.navigator.clipboard
+          //   .writeText(encodeURI(host + "/" + room))
+          //   .then(() => setShowCopied(true));
         }}
         title="Invite link available! 🎉"
-        description={encodeURI(host + "/" + room)}
+        // description={encodeURI(host + "/" + room)}
       />
       <Toast
         model={[showCopied, setShowCopied]}
@@ -158,22 +154,4 @@ const Room: NextPage<{ host: string; room: string }> = ({ host, room }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: `/auth?room=${ctx.query.room}`,
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session, host: ctx.req.headers.host || "", room: ctx.query.room },
-  };
-};
-
-export default Room;
+export default Game;

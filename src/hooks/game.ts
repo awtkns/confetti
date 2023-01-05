@@ -1,6 +1,7 @@
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
-import type { Session } from "next-auth";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -29,6 +30,7 @@ type Estimates = Record<string, UserEstimate>;
 
 interface Game {
   myId: string;
+  room: string | undefined;
   onlineUsers: Users;
   estimates: Estimates;
   gameState: GameState;
@@ -38,11 +40,13 @@ interface Game {
   emitContinue: () => void;
 }
 
-export function useEstimationChannel(
-  channelId: string,
-  session: Session | null
-): Game {
+export function useEstimationChannel(): Game {
   const channel = useRef<RealtimeChannel>();
+
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const [channelId, setChannelId] = useState<string | undefined>(undefined);
   const [confetti, setConfetti] = useState(false);
   const [gameState, setGameState] = useState<GameState>(GameState.CHOOSING);
   const [users, setUsers] = useState<Users>({});
@@ -50,7 +54,15 @@ export function useEstimationChannel(
 
   useEffect(() => {
     if (channel.current) return unsubscribeCallback(channel.current);
+    if (!router.isReady || !session?.user?.name || status != "authenticated")
+      return;
 
+    console.log("set channel");
+    const channelId =
+      router.query.room == "string"
+        ? router.query.room
+        : router.pathname.replace("/", "");
+    setChannelId(channelId);
     channel.current = subscribe(channelId);
     channel.current
       .on("broadcast", { event: ESTIMATE_EVENT }, ({ payload }) => {
@@ -80,7 +92,7 @@ export function useEstimationChannel(
           });
         }
       });
-  }, [channelId, session?.user?.image, session?.user?.name]);
+  }, [router, session?.user?.image, session?.user?.name, status]);
 
   useEffect(() => {
     _updateGameState(estimates, users, setGameState);
@@ -135,6 +147,7 @@ export function useEstimationChannel(
 
   return {
     myId: userId,
+    room: channelId,
     onlineUsers: users,
     gameState: gameState,
     estimates: estimates,
