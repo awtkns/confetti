@@ -1,8 +1,8 @@
 ![Confetti](https://github.com/awtkns/confetti/blob/main/public/banner.png)
 
 <p align="center">
-  <em>🥳 Estimate tickets with more confetti</em> 🥳</br>
-  <sub>A realtime sprint estimation tool with 100% more confetti</sub>
+  <em>🥳 Get your estimation party started with confetti 🥳</em></br>
+  <sub>Realtime estimation with confetti-filled fun. The party tool for your planning process.</sub>
 </p>
 <p align="center">
  <a href="https://confetti.dev/" target="_blank">
@@ -12,33 +12,18 @@
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=16.0.0&logo=node.js&color=2334D058" />
 </p>
 
----
-
-**Documentation**: <a href="https://confetti.dev/" target="_blank">https://confetti.dev</a>
-
-**Source Code**: <a href="https://github.com/awtkns/confetti" target="_blank">https://github.com/awtkns/confetti</a>
-
----
-
-Welcome to the Sprint Estimator 2.0 - the ultimate tool for figuring out how long it will take to complete
-your next sprint... or at least get really close!
-
-Are you tired of constantly overestimating the amount of work that needs to be done in a sprint?
-Well, fear not because the Sprint Estimator 2.0 has got you covered.
-
-With our revolutionary Fibonacci-based estimation system, you and your team can now accurately predict
-how long it will take to complete each task. Simply input your tickets, let the magic of the Fibonacci sequence
-do its thing, and voila! You'll have a pretty good idea of how long it will take to get everything done.
-
-But that's not all! The Sprint Estimator 2.0 also comes with a real-time leaderboard,
-so you can see who on your team is the most optimistic (or realistic) estimator. And, drum roll please...
-the feature you've all been waiting for: CONFETTI! Yes, that's right, whenever someone accurately
-estimates a ticket, the Sprint Estimator 2.0 will shower them with virtual confetti.
-It's like a little party in your browser!
-
-So why wait? Start estimating like a pro with the Sprint Estimator 2.0 today!
+<p align="center">
+<a href="https://confetti.dev">🔗 Short link</a>
+<span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+<a href="#-getting-started">🤝 Contribute</a>
+</p>
 
 ---
+
+Are you tired of mundane planning sessions? It's time to get the party started with 
+<a href="https://confetti.dev/" target="_blank">confetti.dev</a>! Confetti brings a burst of color and excitement 
+to your fibonacci process. Whether you're working with a large or small team, or just looking for a more 
+engaging way to plan projects, confetti has got you covered. So why just estimate when you can celebrimate?
 
 ## 🚀 Tech Stack
 

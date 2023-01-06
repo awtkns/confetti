@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import DynamicConfetti from "../components/DynamicConfetti";
 import RoomForm from "../components/RoomForm";
 
-const FIB = ["1", "2", "3", "5", "8"];
+const FIB = ["1", "2", "3", "5", "8", "3"];
 
 const Home: NextPage = () => {
-  const [fib, setFib] = useState("8");
+  const [fib, setFib] = useState("3");
 
   useEffect(() => {
     const interval = setInterval(() => handleClick(), 3000);
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
       <DynamicConfetti show={true} />
       <h1 className="text-10xl z-10 text-[5rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
-        Estim
+        Conf
         <AnimatePresence mode="popLayout">
           <motion.span
             className="z-50 inline-block text-center text-yellow-400 sm:min-w-[5rem]"
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
             {fib}
           </motion.span>
         </AnimatePresence>
-        r
+        tti
       </h1>
       <div className="z-10 flex flex-col items-center gap-2 drop-shadow-xl">
         <RoomForm />

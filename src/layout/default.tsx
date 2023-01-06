@@ -14,9 +14,16 @@ const DefaultLayout = (props: LayoutProps) => {
   return (
     <>
       <Head>
-        <title>Estimator</title>
-        <meta name="description" content="Estimation with confetti!" />
-        <meta property="og:image" content="https://confetti.dev/api/og" />
+        <title>Confetti</title>
+        <meta property="og:title" content="Confetti" key="title" />
+        <meta
+          name="description"
+          content="Get your estimation party started with confetti!"
+        />
+        <meta property="og:image" content="https://confetti.dev/social.png" />
+        <meta property="og:image:width" content="1280" />
+        <meta property="og:image:height" content="640" />
+
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main

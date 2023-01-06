@@ -65,7 +65,7 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="sticky top-0 z-50 w-full bg-yellow">
       <div className="mx-auto px-4 py-4 ">
         <div className="relative flex items-center ">
           <AnimatePresence>
