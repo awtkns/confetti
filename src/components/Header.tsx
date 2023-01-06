@@ -3,9 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FaGithub, FaHashtag, FaHome, FaLink, FaUser } from "react-icons/fa";
 
-import { useAuth } from "../hooks/useAuth";
-import { Dropdown, DropdownItem } from "../ui/dropdown";
-import Loader from "../ui/loader";
+import { Dropdown, DropdownItem } from "@/ui/dropdown";
+import Loader from "@/ui/loader";
+
+import { useAuth } from "@/hooks/useAuth";
 
 const Header: React.FC = () => {
   const { signOut, session, status } = useAuth();
@@ -34,7 +35,7 @@ const Header: React.FC = () => {
 
       <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
         <a
-          href="https://github.com/awtkns/estimator/issues/new"
+          href="https://github.com/awtkns/confetti/issues/new"
           target="_blank"
           rel="noreferrer"
         >
@@ -55,10 +56,10 @@ const Header: React.FC = () => {
 
   const github = (
     <a
-      href="https://github.com/awtkns/estimator"
+      href="https://github.com/awtkns/confetti"
       className="right-0 ml-0 block block text-white hover:text-yellow-500"
     >
-      <span className="sr-only">Estimator on GitHub</span>
+      <span className="sr-only">Confetti on GitHub</span>
       <FaGithub size="20" />
     </a>
   );

@@ -26,11 +26,11 @@ export default async function (req: NextRequest) {
         <div tw="flex">
           <div tw="flex py-12 px-4 md:items-center justify-center p-8">
             <h2 tw="flex flex-col text-3xl text-center">
-              <span tw="text-[10rem] text-white">🥳 Estimator</span>
+              <span tw="text-[10rem] text-white">🥳 Confetti</span>
               <span tw="text-6xl text-yellow-500 text-center">
                 {room
                   ? "CLick to join #" + room + ""
-                  : "You have been invited to join."}
+                  : "You have been invited to estimate."}
                 .
               </span>
             </h2>

@@ -1,22 +1,22 @@
-![Estimator](https://github.com/awtkns/estimator/blob/main/public/banner.png)
+![Confetti](https://github.com/awtkns/confetti/blob/main/public/banner.png)
 
 <p align="center">
   <em>🥳 Estimate tickets with more confetti</em> 🥳</br>
   <sub>A realtime sprint estimation tool with 100% more confetti</sub>
 </p>
 <p align="center">
- <a href="https://estimator.awtkns.com/" target="_blank">
-  <img alt="Deployment Success" src="https://img.shields.io/github/deployments/awtkns/estimator/production?color=2334D058&label=Deployment" />
+ <a href="https://confetti.dev/" target="_blank">
+  <img alt="Deployment Success" src="https://img.shields.io/github/deployments/awtkns/confetti/production?color=2334D058&label=Deployment" />
  </a>
- <img alt="License" src="https://img.shields.io/github/license/awtkns/estimator?color=2334D058" />
+ <img alt="License" src="https://img.shields.io/github/license/awtkns/confetti?color=2334D058" />
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=16.0.0&logo=node.js&color=2334D058" />
 </p>
 
 ---
 
-**Documentation**: <a href="https://estimator.awtkns.com/" target="_blank">https://estimator.awtkns.com</a>
+**Documentation**: <a href="https://confetti.dev/" target="_blank">https://confetti.dev</a>
 
-**Source Code**: <a href="https://github.com/awtkns/estimator" target="_blank">https://github.com/awtkns/estimator</a>
+**Source Code**: <a href="https://github.com/awtkns/confetti" target="_blank">https://github.com/awtkns/confetti</a>
 
 ---
 
@@ -58,12 +58,12 @@ So why wait? Start estimating like a pro with the Sprint Estimator 2.0 today!
 
 1. Fork this project:
 
-- [Click here](https://github.com/awtkns/estimator/fork).
+- [Click here](https://github.com/awtkns/confetti/fork).
 
 2. Clone the repository:
 
 ```bash
-git clone git@github.com:YOU_USER/estimator.git
+git clone git@github.com:YOU_USER/confetti.git
 ```
 
 3. Install dependencies:
@@ -74,7 +74,7 @@ npm install
 
 4. Create a **.env** file with the following content:
 
-> 🚧 The environment variables must match the following [schema](https://github.com/awtkns/estimator/blob/main/src/env/schema.mjs#L8).
+> 🚧 The environment variables must match the following [schema](https://github.com/awtkns/confetti/blob/main/src/env/schema.mjs#L8).
 
 ```bash
 # Next Auth Secrets

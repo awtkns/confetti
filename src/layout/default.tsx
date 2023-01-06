@@ -1,7 +1,8 @@
 import Head from "next/head";
 
-import Header from "../components/Header";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
+
+import Header from "@/components/Header";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,10 +16,7 @@ const DefaultLayout = (props: LayoutProps) => {
       <Head>
         <title>Estimator</title>
         <meta name="description" content="Estimation with confetti!" />
-        <meta
-          property="og:image"
-          content="https://estimator.awtkns.com/api/og"
-        />
+        <meta property="og:image" content="https://confetti.dev/api/og" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
