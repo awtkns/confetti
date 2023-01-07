@@ -24,7 +24,7 @@ export const Dropdown = (props: DropdownProps) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-2 z-40 mt-2 w-56 origin-top-right divide-y rounded-lg bg-white/10 p-1 shadow-sm focus:outline-none">
+        <Menu.Items className="absolute right-2 z-40 mt-2 w-56 origin-top-right divide-y rounded-lg bg-slate-900 sm:bg-white/10 p-1 shadow-sm focus:outline-none">
           <div className="py-1">{props.children}</div>
         </Menu.Items>
       </Transition>

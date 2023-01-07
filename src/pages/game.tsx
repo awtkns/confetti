@@ -127,22 +127,22 @@ const Game: NextPage = () => {
         myId={myUser?.id}
         className="fixed left-2 top-2 z-10"
       />
-      <h1 className="mt-16 py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem] z-10">
+      <h1 className="sm:mt-16 sm:py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem] z-10">
         Estimating
       </h1>
-      <p className="text-center text-2xl text-white z-10">
+      <p className="text-center text-xl sm:text-2xl text-white z-10">
         Room: <span className="text-yellow-500">{room || ""}</span>
       </p>
       <AnimatePresence mode="wait">
         {choosing || waiting || viewing}
       </AnimatePresence>
-      <div className="flex flex-col bottom-4 absolute items-center z-10 gap-4 ">
+      <div className="flex flex-col bottom-2 sm:bottom-4 absolute items-center z-10 gap-2 sm:gap-4">
         <AnimatePresence>
           {isLoading || isToastOpen || showCopied || (
             <PopIn>
               <Button
                 icon={<FaShare />}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20"
+                className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 "
                 onClick={() => setToastOpen(true)}
               >
                 Invite

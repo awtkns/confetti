@@ -26,7 +26,7 @@ const Auth: NextPage = () => {
 
   return (
     <PopIn className="container mx-auto drop-shadow-xl">
-      <div className="mt-16 flex flex-col items-center justify-center rounded-full">
+      <div className="sm:mt-16 flex flex-col items-center justify-center rounded-full">
         <h1 className="text-4xl font-extrabold text-white sm:text-[5rem]">
           🎉 Welcome 🎉
         </h1>

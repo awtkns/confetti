@@ -24,9 +24,9 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+    <div className="container flex flex-col items-center justify-center gap-12 px-4 sm:py-16">
       <DynamicConfetti show={true} />
-      <h1 className="text-10xl z-10 text-[5rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
+      <h1 className="z-10 text-[4rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
         Conf
         <AnimatePresence mode="popLayout">
           <motion.span

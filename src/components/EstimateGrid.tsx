@@ -10,7 +10,7 @@ const EstimateGrid: React.FC<{
     <button
       key={key}
       onClick={() => submit(value)}
-      className="rounded-2xl bg-white/10 p-8 text-3xl font-bold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
+      className="rounded-2xl bg-white/10 p-4 sm:p-8 text-xl sm:text-3xl font-bold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
     >
       {value}
     </button>

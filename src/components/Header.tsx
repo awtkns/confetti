@@ -65,8 +65,8 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-yellow">
-      <div className="p-2 px-4">
+    <header className="sticky top-0 z-50 w-full bg-yellow fixed">
+      <div className="p-2">
         <div className="relative flex flex-row items-center justify-center align-middle ">
           <AnimatePresence>
             <motion.div
