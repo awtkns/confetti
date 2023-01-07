@@ -121,7 +121,6 @@ const Game: NextPage = () => {
         model={[showCopied, setShowCopied]}
         title="Invite link copied! 😎"
       />
-
       <OnlineUsers
         estimates={estimates}
         users={onlineUsers}
