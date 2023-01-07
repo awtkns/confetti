@@ -1,13 +1,6 @@
-import { useAuthedOnly } from "@/hooks/useAuthedOnly";
-import type {
-  Estimates,
-  GameState,
-  UseGameChannelProps,
-  UserEstimate,
-  Users,
-} from "@/types/game";
 import type { RealtimeChannel } from "@supabase/realtime-js";
 import { nanoid } from "nanoid";
+import type { DefaultSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import type { NextRouter } from "next/router";
 import { useRouter } from "next/router";
@@ -15,7 +8,19 @@ import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
-import { subscribe, unsubscribeCallback } from "@/server/supabase";
+import { subscribe } from "@/server/supabase";
+
+import type {
+  Estimates,
+  GameState,
+  UseGameChannelProps,
+  User,
+  UserEstimate,
+  UserRole,
+  Users,
+} from "@/types/game";
+
+import { useAuthedOnly } from "@/hooks/useAuthedOnly";
 
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
@@ -28,6 +33,7 @@ const userValidator = z.object({
   id: z.string(),
   user: z.string(),
   image: z.string().url(),
+  role: z.enum(["spectator", "estimator"]),
 });
 
 const presenceValidator = z.array(userValidator);
@@ -44,15 +50,21 @@ export function useEstimationChannel(): UseGameChannelProps {
   const [channelId, setChannelId] = useState<string | undefined>(undefined);
   const [confetti, setConfetti] = useState(false);
   const [gameState, setGameState] = useState<GameState>("choosing");
+  const [myUser, setMyUser] = useState<User | undefined>(undefined);
   const [users, setUsers] = useState<Users>({});
   const [estimates, setEstimates] = useState<Estimates>({});
 
   useEffect(() => {
-    if (channel.current) return unsubscribeCallback(channel.current);
-    if (!router.isReady || !session?.user?.name || status != "authenticated")
+    if (
+      channel.current ||
+      !router.isReady ||
+      !session?.user?.name ||
+      status != "authenticated"
+    )
       return;
 
     const channelId = getChannelId(router);
+
     setChannelId(channelId);
 
     channel.current = subscribe(channelId);
@@ -68,28 +80,27 @@ export function useEstimationChannel(): UseGameChannelProps {
       })
       .on("presence", { event: SYNC_EVENT }, () => {
         const state = channel.current?.presenceState();
-
         if (state && state[channelId] !== undefined) {
-          presenceValidator
-            .parseAsync(state[channelId])
-            .then((r) => setUsers(Object.fromEntries(r.map((e) => [e.id, e]))));
+          presenceValidator.parseAsync(state[channelId]).then((r) => {
+            setUsers(Object.fromEntries(r.map((e) => [e.id, e])));
+          });
         }
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await channel.current?.track({
-            user: session?.user?.name,
-            image: session?.user?.image,
-            id: myId,
-          });
+          const user = updateUser(session?.user, "estimator");
+          setMyUser(user);
+          await channel.current?.track(user);
         }
       });
-  }, [router, session?.user?.image, session?.user?.name, status]);
+  }, [router, session?.user, status]);
 
   useEffect(() => {
     updateGameState(estimates, users, setGameState);
     const estimatesCount = Object.keys(estimates).length;
-    const usersCount = Object.keys(users).length;
+    const usersCount = Object.values(users).filter(
+      (e) => e.role == "estimator"
+    ).length;
 
     if (
       gameState == "choosing" ||
@@ -102,17 +113,18 @@ export function useEstimationChannel(): UseGameChannelProps {
     }
 
     const arr = Object.values(estimates);
-    setConfetti(arr.every((e) => e.value == (arr.at(0)?.value || "null")));
+    setConfetti(
+      arr.every(
+        (e) =>
+          e.user.role == "spectator" || e.value == (arr.at(0)?.value || "null")
+      )
+    );
   }, [gameState, estimates, users]);
 
   function submitEstimate(value: string) {
     const estimate: UserEstimate = {
       value: value,
-      user: {
-        user: session?.user?.name || "Anonymous",
-        image: session?.user?.image || "",
-        id: myId,
-      },
+      user: myUser || updateUser(session?.user, "estimator"),
     };
 
     addEstimate(estimate, setEstimates);
@@ -141,21 +153,37 @@ export function useEstimationChannel(): UseGameChannelProps {
     });
   }
 
+  function emitRole(role: UserRole) {
+    const user = updateUser(session?.user, role);
+    setMyUser(user);
+    channel.current?.track(user);
+  }
+
   function _clearEstimates() {
     setEstimates({});
     setGameState("choosing");
   }
 
   return {
-    myId: myId,
+    myUser: myUser,
     room: channelId,
     onlineUsers: users,
     gameState: gameState,
     estimates: estimates,
     submit: submitEstimate,
+    emitRole: emitRole,
     emitClear: emitClear,
     emitContinue: emitContinue,
     confetti: confetti,
+  };
+}
+
+function updateUser(user: DefaultSession["user"], role: UserRole): User {
+  return {
+    user: user?.name || "Anonymous",
+    image: user?.image || "",
+    id: myId,
+    role: role,
   };
 }
 
@@ -175,9 +203,11 @@ function updateGameState(
   setGameState: Dispatch<SetStateAction<GameState>>
 ) {
   const estimatesCount = Object.keys(estimates).length;
-  const usersCount = Object.keys(users).length;
+  const usersCount = Object.values(users).filter(
+    (e) => e.role == "estimator"
+  ).length;
 
-  if (estimatesCount && estimatesCount >= usersCount) setGameState("viewing");
+  if (estimatesCount >= usersCount) setGameState("viewing");
 }
 
 const getChannelId = (r: NextRouter) => {

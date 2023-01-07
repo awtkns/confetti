@@ -9,6 +9,7 @@ export interface ButtonProps {
   icon?: React.ReactNode;
   children?: React.ReactNode;
   loader?: boolean;
+  disabled?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void> | void;
 }
 
@@ -29,7 +30,7 @@ const Button = forwardRef(
       <button
         ref={ref}
         type={props.type}
-        disabled={loading}
+        disabled={loading || props.disabled}
         onClick={onClick}
         className={
           "text-white transition hover:text-yellow-500 " + props.className

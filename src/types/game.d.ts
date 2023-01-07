@@ -1,7 +1,9 @@
+export type UserRole = "spectator" | "estimator";
 export interface User {
   id: string;
   user: string;
-  image: string;
+  image?: string;
+  role: UserRole;
 }
 
 export interface UserEstimate {
@@ -14,7 +16,7 @@ export type Users = Record<string, User>;
 export type Estimates = Record<string, UserEstimate>;
 
 export interface UseGameChannelProps {
-  myId: string;
+  myUser: User | undefined;
   room: string | undefined;
   onlineUsers: Users;
   estimates: Estimates;
@@ -23,4 +25,5 @@ export interface UseGameChannelProps {
   submit: (estimate: string) => void;
   emitClear: () => void;
   emitContinue: () => void;
+  emitRole: (role: UserRole) => void;
 }

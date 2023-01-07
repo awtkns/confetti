@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FaGithub, FaHashtag, FaHome, FaLink, FaUser } from "react-icons/fa";
+import { FaAngleDown, FaGithub, FaHome, FaLink, FaUser } from "react-icons/fa";
 
 import { Dropdown, DropdownItem } from "@/ui/dropdown";
 import Loader from "@/ui/loader";
@@ -15,24 +16,24 @@ const Header: React.FC = () => {
   const authenticated = status == "authenticated" && (
     <Dropdown
       title={session?.user?.name || ""}
-      icon={<FaHashtag className="h-4 text-inherit" />}
+      icon={<FaAngleDown className="h-5 text-inherit" />}
       loader={false}
     >
-      {status === "authenticated" && (
-        <DropdownItem
-          icon={<FaUser className="h-4 text-inherit text-white" />}
-          onClick={signOut}
-        >
-          Sign Out
-        </DropdownItem>
-      )}
+      <h1 className="border-white/5 border-b-2 font-bold px-3">
+        {session?.user?.name}
+      </h1>
 
+      <DropdownItem
+        icon={<FaUser className="h-4 text-inherit text-white" />}
+        onClick={signOut}
+      >
+        Sign Out
+      </DropdownItem>
       {router.route != "/" && (
         <DropdownItem icon={<FaHome className="h-4 text-inherit" />}>
           <Link href="/">Home</Link>
         </DropdownItem>
       )}
-
       <DropdownItem icon={<FaLink className="h-4 text-inherit" />}>
         <a
           href="https://github.com/awtkns/confetti/issues/new"
@@ -66,8 +67,8 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-yellow">
-      <div className="mx-auto px-4 py-4 ">
-        <div className="relative flex items-center ">
+      <div className="p-2 px-4">
+        <div className="relative flex flex-row items-center justify-center align-middle ">
           <AnimatePresence>
             <motion.div
               initial={{ opacity: 0 }}
