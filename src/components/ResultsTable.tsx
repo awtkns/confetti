@@ -24,28 +24,25 @@ const ResultsTable: React.FC<{
   }, [estimates, onlineUsers]);
 
   return (
-    <>
-      {results.keys()}
-      <table className={className}>
-        <thead>
-          <tr>
-            <td className="px-4 py-2">Results</td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from(results.values())
-            .sort((a, b) => parseInt(a.value) - parseInt(b.value))
-            .filter((e) => e.user?.role == "estimator")
-            .map((e, i) => (
-              <tr key={i}>
-                <td className="pl-4 font-thin ">{e.user.user}</td>
-                <td className="px-4 py-2 text-yellow-500">{e.value}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </>
+    <table className={className}>
+      <thead>
+        <tr>
+          <td className="px-4 py-2">Results</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        {Array.from(results.values())
+          .sort((a, b) => parseInt(a.value) - parseInt(b.value))
+          .filter((e) => e.user?.role == "estimator")
+          .map((e, i) => (
+            <tr key={i}>
+              <td className="pl-4 font-thin ">{e.user.user}</td>
+              <td className="px-4 py-2 text-yellow-500">{e.value}</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
   );
 };
 

@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FaAngleDown, FaGithub, FaHome, FaLink, FaUser } from "react-icons/fa";
@@ -19,7 +18,7 @@ const Header: React.FC = () => {
       icon={<FaAngleDown className="h-5 text-inherit" />}
       loader={false}
     >
-      <h1 className="border-white/5 border-b-2 font-bold px-3">
+      <h1 className="border-white/5 border-b-2 font-bold px-3 pb-1 text-md">
         {session?.user?.name}
       </h1>
 
