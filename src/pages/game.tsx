@@ -1,4 +1,3 @@
-import DynamicConfetti from "components/DynamicConfetti";
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -12,9 +11,11 @@ import Toast from "@/ui/toast";
 
 import { useEstimationChannel } from "@/hooks/useGameChannel";
 
+import DynamicConfetti from "@/components/DynamicConfetti";
 import EstimateGrid from "@/components/EstimateGrid";
 import OnlineUsers from "@/components/OnlineUsers";
 import ResultsTable from "@/components/ResultsTable";
+import WaitingForTable from "@/components/WaitingForTable";
 
 import { env } from "../env/client.mjs";
 
@@ -27,32 +28,44 @@ const Game: NextPage = () => {
     emitRole,
     emitClear,
     emitContinue,
-    confetti,
     myUser,
     room,
   } = useEstimationChannel();
 
-  const [waitingForUsers, setWaitingForUsers] = useState<Map<string, User>>(
-    new Map()
-  );
   const [isToastOpen, setToastOpen] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [showCopied, setShowCopied] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       setToastOpen(true);
       setLoading(false);
     }, 750);
+
+    return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    const s = new Map(
-      Object.entries(onlineUsers).filter(([, u]) => u.role == "estimator")
+  const showConfetti = () => {
+    const estimatesArray = Object.values(estimates);
+    const usersCount = Object.values(onlineUsers).filter(
+      (e) => e.role == "estimator"
+    ).length;
+
+    if (
+      gameState == "choosing" ||
+      gameState == "submitted" ||
+      estimatesArray.length != usersCount ||
+      estimatesArray.length == 0
+    ) {
+      return false;
+    }
+
+    return estimatesArray.every(
+      (e) =>
+        e.user.role == "spectator" ||
+        e.value == (estimatesArray.at(0)?.value || "null")
     );
-    Object.values(estimates).forEach((e) => s.delete(e.user.id));
-    setWaitingForUsers(s);
-  }, [onlineUsers, estimates]);
+  };
 
   const choosing = gameState == "choosing" && myUser?.role == "estimator" && (
     <EstimateGrid submit={submit} key="choosing" />
@@ -61,29 +74,11 @@ const Game: NextPage = () => {
   const waiting = (gameState == "submitted" ||
     (gameState == "choosing" && myUser?.role == "spectator")) && (
     <PopIn className="flex flex-col items-center z-10" key="waiting">
-      <table className="m-4 rounded-2xl bg-white/10 text-2xl font-semibold text-white">
-        <thead>
-          <tr>
-            <td className="px-4 py-2">Waiting for:</td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from(waitingForUsers.values())
-            .filter((e) => e.role == "estimator")
-            .map((e, i) => (
-              <tr key={i}>
-                <td className="px-4 py-2 font-thin">{e.user}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <button
-        className="rounded-2xl bg-white/10 px-10 py-3 font-semibold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500"
+      <WaitingForTable
+        users={onlineUsers}
+        estimates={estimates}
         onClick={emitContinue}
-      >
-        View results
-      </button>
+      />
     </PopIn>
   );
   const viewing = gameState == "viewing" && (
@@ -106,7 +101,7 @@ const Game: NextPage = () => {
 
   return (
     <>
-      <DynamicConfetti show={confetti} />
+      <DynamicConfetti show={showConfetti()} />
       <Toast
         model={[isToastOpen, setToastOpen]}
         onAction={() => {

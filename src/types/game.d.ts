@@ -21,7 +21,6 @@ export interface UseGameChannelProps {
   onlineUsers: Users;
   estimates: Estimates;
   gameState: GameState;
-  confetti: boolean;
   submit: (estimate: string) => void;
   emitClear: () => void;
   emitContinue: () => void;

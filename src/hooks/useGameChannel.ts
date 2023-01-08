@@ -48,7 +48,6 @@ export function useEstimationChannel(): UseGameChannelProps {
   const router = useRouter();
 
   const [channelId, setChannelId] = useState<string | undefined>(undefined);
-  const [confetti, setConfetti] = useState(false);
   const [gameState, setGameState] = useState<GameState>("choosing");
   const [myUser, setMyUser] = useState<User | undefined>(undefined);
   const [users, setUsers] = useState<Users>({});
@@ -97,28 +96,6 @@ export function useEstimationChannel(): UseGameChannelProps {
 
   useEffect(() => {
     updateGameState(estimates, users, setGameState);
-    const estimatesCount = Object.keys(estimates).length;
-    const usersCount = Object.values(users).filter(
-      (e) => e.role == "estimator"
-    ).length;
-
-    if (
-      gameState == "choosing" ||
-      gameState == "submitted" ||
-      estimatesCount != usersCount ||
-      estimatesCount == 0
-    ) {
-      setConfetti(false);
-      return;
-    }
-
-    const arr = Object.values(estimates);
-    setConfetti(
-      arr.every(
-        (e) =>
-          e.user.role == "spectator" || e.value == (arr.at(0)?.value || "null")
-      )
-    );
   }, [gameState, estimates, users]);
 
   function submitEstimate(value: string) {
@@ -128,7 +105,6 @@ export function useEstimationChannel(): UseGameChannelProps {
     };
 
     addEstimate(estimate, setEstimates);
-    updateGameState(estimates, users, setGameState);
     if (gameState == "choosing") setGameState("submitted");
     channel.current?.send({
       type: "broadcast",
@@ -174,7 +150,6 @@ export function useEstimationChannel(): UseGameChannelProps {
     emitRole: emitRole,
     emitClear: emitClear,
     emitContinue: emitContinue,
-    confetti: confetti,
   };
 }
 
