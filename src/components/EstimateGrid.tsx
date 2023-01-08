@@ -1,3 +1,5 @@
+import cx from "classnames";
+
 import PopIn from "../ui/popin";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
@@ -10,14 +12,19 @@ const EstimateGrid: React.FC<{
     <button
       key={key}
       onClick={() => submit(value)}
-      className="rounded-2xl bg-white/10 p-4 sm:p-8 text-xl sm:text-3xl font-bold text-white no-underline shadow-lg transition hover:bg-white/20 hover:text-yellow-500 sm:p-12 sm:text-4xl"
+      className={cx(
+        "rounded-2xl bg-white/10 shadow-lg transition aspect-square",
+        "py-2 sm:p-12",
+        "hover:bg-white/20 hover:text-yellow-500",
+        "font-bold text-white no-underline text-4xl"
+      )}
     >
       {value}
     </button>
   );
 
   return (
-    <PopIn className="m-4 grid grid-cols-3 gap-4">
+    <PopIn className="my-4 grid grid-cols-3 gap-2 sm:gap-4 w-full sm:w-auto px-4">
       {FIB.map((value, key) =>
         value === "" ? hidden(key) : button(key, value)
       )}

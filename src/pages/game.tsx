@@ -122,7 +122,7 @@ const Game: NextPage = () => {
         myId={myUser?.id}
         className="fixed left-2 top-2 z-10"
       />
-      <h1 className="sm:mt-16 sm:py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem] z-10">
+      <h1 className="sm:py-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[5rem] z-10">
         Estimating
       </h1>
       <p className="text-center text-xl sm:text-2xl text-white z-10">
