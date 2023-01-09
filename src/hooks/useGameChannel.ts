@@ -22,6 +22,8 @@ import type {
 
 import { useAuthedOnly } from "@/hooks/useAuthedOnly";
 
+import { trpc } from "../utils/trpc";
+
 const ESTIMATE_EVENT = "input";
 const CLEAR_EVENT = "clear";
 const VIEW_EVENT = "view";
@@ -52,6 +54,7 @@ export function useEstimationChannel(): UseGameChannelProps {
   const [myUser, setMyUser] = useState<User | undefined>(undefined);
   const [users, setUsers] = useState<Users>({});
   const [estimates, setEstimates] = useState<Estimates>({});
+  const saveEstimate = trpc.game.saveEstimate.useMutation();
 
   useEffect(() => {
     if (
@@ -106,11 +109,21 @@ export function useEstimationChannel(): UseGameChannelProps {
 
     addEstimate(estimate, setEstimates);
     if (gameState == "choosing") setGameState("submitted");
-    channel.current?.send({
-      type: "broadcast",
-      event: ESTIMATE_EVENT,
-      payload: estimate,
-    });
+    channel.current
+      ?.send({
+        type: "broadcast",
+        event: ESTIMATE_EVENT,
+        payload: estimate,
+      })
+      .then(() =>
+        saveEstimate
+          .mutateAsync({
+            channel: channelId || "",
+            value: estimate.value,
+            presenceRef: myId,
+          })
+          .catch()
+      );
   }
 
   function emitClear() {
@@ -186,7 +199,10 @@ function updateGameState(
 }
 
 const getChannelId = (r: NextRouter) => {
-  return typeof r.query.room == "string"
-    ? r.query.room
-    : r.pathname.replace("/", "");
+  const room =
+    typeof r.query.room == "string"
+      ? r.query.room
+      : r.pathname.replace("/", "");
+
+  return room.toLowerCase();
 };
