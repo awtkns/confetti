@@ -27,7 +27,7 @@ const DefaultLayout = (props: LayoutProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div
-        className="min-h-screen"
+        className="min-h-screen flex-col flex"
         style={{
           backgroundColor: "rgb(30, 41, 59)",
           backgroundImage:
@@ -35,7 +35,9 @@ const DefaultLayout = (props: LayoutProps) => {
         }}
       >
         <Header />
-        <main className="flex  flex-col items-center">{props.children}</main>
+        <main className="flex flex-col items-center justify-between flex-1">
+          {props.children}
+        </main>
       </div>
     </>
   );

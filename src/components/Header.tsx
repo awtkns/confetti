@@ -65,22 +65,18 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-yellow fixed">
-      <div className="p-2">
-        <div className="relative flex flex-row items-center justify-center align-middle ">
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, type: "spring" }}
-              className="ml-auto pr-4 text-lg text-white hover:text-yellow-500"
-            >
-              {authenticated || loading || unauthenticated}
-            </motion.div>
-          </AnimatePresence>
-          {github}
-        </div>
-      </div>
+    <header className="z-50 w-full p-2 relative flex flex-row items-center justify-center align-middle">
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, type: "spring" }}
+          className="ml-auto pr-4 text-lg text-white hover:text-yellow-500"
+        >
+          {authenticated || loading || unauthenticated}
+        </motion.div>
+      </AnimatePresence>
+      {github}
     </header>
   );
 };

@@ -131,7 +131,7 @@ const Game: NextPage = () => {
       <AnimatePresence mode="wait">
         {choosing || waiting || viewing}
       </AnimatePresence>
-      <div className="flex flex-col bottom-2 sm:bottom-4 absolute items-center z-10 gap-2 sm:gap-4">
+      <div className="flex flex-col items-center z-10 gap-2 sm:gap-4 mb-4 mt-auto">
         <AnimatePresence>
           {isLoading || isToastOpen || showCopied || (
             <PopIn>

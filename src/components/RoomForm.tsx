@@ -41,7 +41,7 @@ const RoomForm: React.FC = () => {
       <Input
         type="text"
         className="py-2"
-        placeholder="Room to join..."
+        placeholder="Create a session ..."
         model={room}
         error={error}
         enterPressed={joinRoom}

@@ -24,7 +24,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className="container flex flex-col items-center justify-center gap-12 px-4 sm:py-16">
+    <div className="container flex flex-col items-center px-4 sm:p-16">
       <DynamicConfetti show={true} />
       <h1 className="z-10 text-[4rem] font-extrabold tracking-tight text-white drop-shadow-xl sm:text-[8rem]">
         Conf
@@ -43,6 +43,9 @@ const Home: NextPage = () => {
         </AnimatePresence>
         tti
       </h1>
+      <p className="text-white text-xl sm:text-2xl text-center rounded-3xl font-light mb-12">
+        🎉 Get your estimation party started with confetti! 🎉
+      </p>
       <div className="z-10 flex flex-col items-center gap-2 drop-shadow-xl">
         <RoomForm />
       </div>
