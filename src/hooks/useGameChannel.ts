@@ -195,7 +195,7 @@ function updateGameState(
     (e) => e.role == "estimator"
   ).length;
 
-  if (estimatesCount >= usersCount) setGameState("viewing");
+  if (estimatesCount >= usersCount && usersCount > 0) setGameState("viewing");
 }
 
 const getChannelId = (r: NextRouter) => {

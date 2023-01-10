@@ -2,10 +2,11 @@ import type { NextPage } from "next";
 import { useState } from "react";
 import { FaArrowRight, FaGithub, FaGoogle } from "react-icons/fa";
 
-import { useAuth } from "../hooks/useAuth";
-import Button from "../ui/button";
-import Input from "../ui/input";
-import PopIn from "../ui/popin";
+import Button from "@/ui/button";
+import Input from "@/ui/input";
+import PopIn from "@/ui/popin";
+
+import { useAuth } from "@/hooks/useAuth";
 
 const Auth: NextPage = () => {
   const auth = useAuth();
