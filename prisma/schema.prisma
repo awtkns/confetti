@@ -47,7 +47,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Estimate      Estimate[]
+  estimates     Estimate[]
 }
 
 model VerificationToken {
@@ -62,7 +62,7 @@ model EstimateRound {
   id        String     @id @default(cuid())
   channel   String
   createdAt DateTime   @default(now())
-  Estimate  Estimate[]
+  estimates Estimate[]
 
   @@index([channel, createdAt(sort: Desc)])
 }

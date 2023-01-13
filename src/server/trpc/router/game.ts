@@ -13,21 +13,25 @@ export const gameRouter = router({
   saveEstimate: protectedProcedure
     .input(estimateValidator)
     .mutation(async ({ input: estimate, ctx }) => {
-      let round = await prisma.estimateRound.findFirst({
-        orderBy: { createdAt: "desc" },
-      });
-
       const user = await prisma.user.findFirstOrThrow({
         where: { email: ctx.session?.user?.email },
       });
 
-      const currRoundEstimate = await prisma.estimate.findFirst({
-        where: {
-          roundId: round?.id,
-          userId: user.id,
-          presenceRef: estimate.presenceRef,
-        },
+      // noinspection TypeScriptValidateTypes,TypeScriptValidateJSTypes
+      let round = await prisma.estimateRound.findFirst({
+        where: { channel: estimate.channel },
+        orderBy: { createdAt: "desc" },
       });
+
+      const currRoundEstimate = round
+        ? await prisma.estimate.findFirst({
+            where: {
+              roundId: round?.id,
+              userId: user.id,
+              presenceRef: estimate.presenceRef,
+            },
+          })
+        : null;
 
       if (currRoundEstimate || !round) {
         round = await prisma.estimateRound.create({
