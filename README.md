@@ -8,8 +8,9 @@
  <a href="https://confetti.dev/" target="_blank">
   <img alt="Deployment Success" src="https://img.shields.io/github/deployments/awtkns/confetti/production?color=2334D058&label=Deployment" />
  </a>
+ <img alt="Health Check" src="https://img.shields.io/github/actions/workflow/status/awtkns/confetti/healthcheck.yml?label=Health%20Check&color=2334D058" />
  <img alt="License" src="https://img.shields.io/github/license/awtkns/confetti?color=2334D058" />
-    <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=16.0.0&logo=node.js&color=2334D058" />
+ <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=16.0.0&logo=node.js&color=2334D058" />
 </p>
 
 <p align="center">
