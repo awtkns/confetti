@@ -1,0 +1,17 @@
+name: Supabase Health Check
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake Supabase project
+        env:
+          URL: ${{ secrets.SUPABASE_HEALTHCHECK_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -X POST $URL \
+          -H "Content-Type: application/json" \
+          -H "apikey: $KEY"
