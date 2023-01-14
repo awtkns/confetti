@@ -26,6 +26,15 @@ Are you tired of mundane planning sessions? It's time to get the party started w
 to your fibonacci process. Whether you're working with a large or small team, or just looking for a more 
 engaging way to plan projects, confetti has got you covered. So why just estimate when you can celebrimate?
 
+## 🎉 Features
+ - 🎨 **Colorful** - Confetti will rain down when all estimates agree.
+ - 📈 **Realtime** - See your team's estimates update in realtime.
+ - 📝 **Collaborative** - Share your session with your whole team, small or large.
+ - 📊 **Estimation** - Confetti supports currently fibonacci estimates, more coming soon!
+ - 🔓 **Anonymous** - No need to create an account. Just enter a username, and you're ready to go.
+ - 🔒 **Secure** - Login with your favorite SSO provider. When logged in, your profile image will be shown in the session.
+ - 📦 **Open-source** - Confetti is free and open-source.
+
 ## 🚀 Tech Stack
 
 - ✅ **Bootstrapping**: [create-t3-app](https://create.t3.gg).
