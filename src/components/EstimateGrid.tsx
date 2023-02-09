@@ -3,10 +3,12 @@ import cx from "classnames";
 import PopIn from "../ui/popin";
 
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
+const TEE = ["XS", "S", "M", "L", "XL", "XXL", "", "🤷", ""]
 
 const EstimateGrid: React.FC<{
   submit: (estimate: string) => void;
-}> = ({ submit }) => {
+  teeSize?: boolean;
+}> = ({ submit, teeSize }) => {
   const hidden = (key: number) => <div key={key} className="invisible"></div>;
   const button = (key: number, value: string) => (
     <button
@@ -23,9 +25,11 @@ const EstimateGrid: React.FC<{
     </button>
   );
 
+  const values = teeSize ? TEE : FIB;
+
   return (
     <PopIn className="my-4 grid grid-cols-3 gap-2 sm:gap-4 w-full sm:w-auto px-4">
-      {FIB.map((value, key) =>
+      {values.map((value, key) =>
         value === "" ? hidden(key) : button(key, value)
       )}
     </PopIn>

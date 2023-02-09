@@ -36,6 +36,8 @@ const Game: NextPage = () => {
   const [isLoading, setLoading] = useState(true);
   const [showCopied, setShowCopied] = useState(false);
 
+  const tShirt = room !== undefined && room.toLocaleLowerCase().endsWith("-tshirt");
+
   useEffect(() => {
     const t = setTimeout(() => {
       setToastOpen(true);
@@ -68,7 +70,7 @@ const Game: NextPage = () => {
   };
 
   const choosing = gameState == "choosing" && myUser?.role == "estimator" && (
-    <EstimateGrid submit={submit} key="choosing" />
+    <EstimateGrid submit={submit} key="choosing" teeSize={tShirt} />
   );
 
   const waiting = (gameState == "submitted" ||
