@@ -39,13 +39,15 @@ const Game: NextPage = () => {
   const tShirt = room !== undefined && room.toLocaleLowerCase().endsWith("-tshirt");
 
   useEffect(() => {
+    if (room === undefined) return () => undefined;
+
     const t = setTimeout(() => {
       setToastOpen(true);
       setLoading(false);
     }, 750);
 
     return () => clearTimeout(t);
-  }, []);
+  }, [room]);
 
   const showConfetti = () => {
     const estimatesArray = Object.values(estimates);
