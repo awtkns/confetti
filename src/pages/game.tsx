@@ -19,6 +19,7 @@ import WaitingForTable from "@/components/WaitingForTable";
 
 import { env } from "../env/client.mjs";
 
+
 const Game: NextPage = () => {
   const {
     onlineUsers,
@@ -36,7 +37,8 @@ const Game: NextPage = () => {
   const [isLoading, setLoading] = useState(true);
   const [showCopied, setShowCopied] = useState(false);
 
-  const tShirt = room !== undefined && room.toLocaleLowerCase().endsWith("-tshirt");
+  const tShirt =
+    room !== undefined && room.toLocaleLowerCase().endsWith("-tshirt");
 
   useEffect(() => {
     if (room === undefined) return () => undefined;
@@ -105,7 +107,7 @@ const Game: NextPage = () => {
 
   return (
     <>
-      <DynamicConfetti show={showConfetti()} />
+      <DynamicConfetti show={showConfetti()} sound />
       <Toast
         model={[isToastOpen, setToastOpen]}
         onAction={() => {

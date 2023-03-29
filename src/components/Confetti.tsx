@@ -1,6 +1,7 @@
 import ReactConfetti from "react-confetti";
 
-import { useWindowSize } from "../hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/useWindowSize";
+
 
 const Confetti: React.FC<{ show: boolean }> = ({ show }) => {
   const { width, height } = useWindowSize();

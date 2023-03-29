@@ -1,19 +1,25 @@
 import cx from "classnames";
+import useSound from "use-sound";
 
 import PopIn from "../ui/popin";
 
+
 const FIB = ["1", "2", "3", "5", "8", "13", "", "🤷", ""];
-const TEE = ["XS", "S", "M", "L", "XL", "XXL", "", "🤷", ""]
+const TEE = ["XS", "S", "M", "L", "XL", "XXL", "", "🤷", ""];
 
 const EstimateGrid: React.FC<{
   submit: (estimate: string) => void;
   teeSize?: boolean;
 }> = ({ submit, teeSize }) => {
+  const [playSound] = useSound("/wet-click.wav", { volume: 0.25 });
   const hidden = (key: number) => <div key={key} className="invisible"></div>;
   const button = (key: number, value: string) => (
     <button
       key={key}
-      onClick={() => submit(value)}
+      onClick={() => {
+        playSound();
+        submit(value);
+      }}
       className={cx(
         "rounded-2xl bg-white/10 shadow-lg transition aspect-square",
         "py-2 sm:p-12",

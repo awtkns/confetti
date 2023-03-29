@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import Header from "@/components/Header";
 
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -35,14 +36,7 @@ const DefaultLayout = (props: LayoutProps) => {
         <meta property="og:type" content="website" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div
-        className="min-h-screen flex-col flex"
-        style={{
-          backgroundColor: "rgb(30, 41, 59)",
-          backgroundImage:
-            "radial-gradient(at 100% 0%, rgb(59, 130, 246) 0, transparent 80%), radial-gradient(at 0% 5%, rgb(147, 51, 234) 0, transparent 50%)",
-        }}
-      >
+      <div className="min-h-screen flex-col flex bg-gradient-to-l from-slate-900 via-purple-900 to-slate-900">
         <Header />
         <main className="flex flex-col items-center justify-between flex-1">
           {props.children}
