@@ -17,7 +17,7 @@ export default function DynamicConfetti(props: Props & { sound?: boolean }) {
     if (props.show && props.sound) {
       play();
     }
-  }, [play, props]);
+  }, [props.show, props.sound, play]);
 
   return <Confetti show={props.show} />;
 }
