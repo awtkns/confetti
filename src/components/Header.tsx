@@ -1,7 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FaAngleDown, FaGithub, FaHome, FaLink, FaUser } from "react-icons/fa";
+import {
+  FaAngleDown,
+  FaGithub,
+  FaHome,
+  FaLink,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 import { Dropdown, DropdownItem } from "@/ui/dropdown";
 import Loader from "@/ui/loader";
@@ -23,7 +29,7 @@ const Header: React.FC = () => {
       </h1>
 
       <DropdownItem
-        icon={<FaUser className="h-4 text-inherit text-white" />}
+        icon={<FaSignOutAlt className="h-4 text-inherit text-white" />}
         onClick={signOut}
       >
         Sign Out
