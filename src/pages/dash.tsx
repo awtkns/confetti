@@ -26,13 +26,14 @@ ChartJS.register(
 );
 
 const Dash: NextPage = () => {
-  useAuthedOnly((router) => router.push("/auth"));
+  useAuthedOnly((router) => router.push("/auth?room=dash"));
 
   const { data } = trpc.stats.get.useQuery();
+  const { data: roomStats } = trpc.stats.getByRoom.useQuery("platform-services");
 
   return (
     <div className="w-full max-w-screen-md p-4">
-      <div className="grid grid-cols-3 gap-4 py-4">
+      <div className="grid grid-cols-3 gap-4 pb-4">
         <Stat
           title="Total Estimates"
           value={
@@ -102,11 +103,19 @@ const Dash: NextPage = () => {
           className="bg-slate-900 rounded-2xl text-white p-2"
         />
       </div>
+      <div className="grid grid-cols-3 gap-4 py-4">
+        {roomStats?.userStats.map(e => <Stat
+            key={e.firstName}
+            title={e.firstName}
+            value={e.avg.toFixed(2)}
+            info={e.count + " total"}
+        />)}
+      </div>
     </div>
   );
 };
 
-const Stat = ({ title, value }: { title: string; value: number }) => (
+const Stat = ({ title, value, info }: { title: string; value: string | number; info?: string }) => (
   <div className="rounded-lg shadow-sm">
     <div className="rounded-lg bg-slate-900 shadow-lg md:shadow-xl relative overflow-hidden">
       <div className="px-3 pt-8 pb-10 text-center relative z-10">
@@ -115,6 +124,9 @@ const Stat = ({ title, value }: { title: string; value: number }) => (
         </h4>
         <h3 className="text-3xl text-gray-200 font-semibold leading-tight mt-3">
           {value}
+        </h3>
+        <h3 className="text-sm uppercase text-gray-700 leading-tight pt-2">
+          {info}
         </h3>
       </div>
     </div>
