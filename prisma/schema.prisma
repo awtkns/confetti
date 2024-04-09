@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -84,4 +83,11 @@ model Estimate {
   @@index([roundId])
   @@index([userId])
   @@index([presenceRef])
+}
+
+model HealthCheck {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+
+  @@map("healthcheck")
 }
